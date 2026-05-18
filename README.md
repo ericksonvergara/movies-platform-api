@@ -10,6 +10,13 @@
   Sistema de alquiler de películas desarrollado con Spring Boot, React y PostgreSQL.
 </p>
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-17-orange">
+  <img src="https://img.shields.io/badge/SpringBoot-3.x-green">
+  <img src="https://img.shields.io/badge/PostgreSQL-Database-blue">
+  <img src="https://img.shields.io/badge/React-Frontend-61DAFB">
+</p>
+
 ## 🚀 Tecnologías
 
 ### Backend
@@ -105,3 +112,4 @@ http://localhost:8080
 ## 📌 Estado del proyecto
 
 🚧 En desarrollo.
+

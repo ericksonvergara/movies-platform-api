@@ -10,6 +10,7 @@ import com.noskcire.movies.domain.model.User;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.PersonRepository;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.RoleRepository;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.UserRepository;
+import com.noskcire.movies.infrastructure.security.jwt.JwtService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +27,7 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     @Transactional
     public AuthResponse register(
@@ -77,8 +79,20 @@ public class AuthService {
                 )
         );
 
+        User user =
+                userRepository
+                        .findByUsername(
+                                loginRequest.username()
+                        )
+                        .orElseThrow();
+
+        String jwtToken =
+                jwtService.generateToken(user);
+
+
         return new AuthResponse(
-                null,
+//                null,
+                jwtToken,
                 "Inicio de sesión exitoso."
         );
     }
