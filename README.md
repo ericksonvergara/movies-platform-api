@@ -1,6 +1,14 @@
-# Movies Platform
+<p align="center">
+  <img src="https://spring.io/img/projects/spring-boot.svg" width="120" alt="Spring Boot Logo">
+</p>
 
-Sistema de alquiler de películas desarrollado con Spring Boot, React y PostgreSQL, implementando arquitectura hexagonal para garantizar escalabilidad, mantenibilidad y separación de responsabilidades.
+<h1 align="center">
+  Movies Platform
+</h1>
+
+<p align="center">
+  Sistema de alquiler de películas desarrollado con Spring Boot, React y PostgreSQL.
+</p>
 
 ## 🚀 Tecnologías
 
