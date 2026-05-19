@@ -43,32 +43,34 @@ public class JwtService {
     }
 
     public String generateToken(
-//            UserDetails userDetails
-            User user
+            UserDetails userDetails
     ){
         return generateToken(
                 new HashMap<>(),
-//                userDetails
-                user
+                userDetails
         );
     }
 
     public String generateToken(
             Map<String,Object> extraClaims,
-//            UserDetails userDetails
-            User user
+            UserDetails userDetails
     ) {
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(
-//                        userDetails.getUsername()
-                        user.getUsername()
+                        userDetails.getUsername()
+
                 )
                 .setIssuedAt(
                         new Date(
                                 System.currentTimeMillis()
-                                + jwtExpiration
+                        )
+                )
+                .setExpiration(
+                        new Date(
+                                System.currentTimeMillis()
+                                +jwtExpiration
                         )
                 )
                 .signWith(
@@ -80,15 +82,15 @@ public class JwtService {
 
     public boolean IsTokenValid(
             String token,
-//            UserDetails userDetails
-            User user
+            UserDetails userDetails
+//            User user
     ) {
         final String username =
                 extractUsername(token);
 
         return (username.equals(
-//                userDetails.getUsername()
-                user.getUsername()
+                userDetails.getUsername()
+//                user.getUsername()
         ) &&
                 !isTokenExpired(token)
         );
@@ -119,7 +121,7 @@ public class JwtService {
                         getSignInKey()
                 )
                 .build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody();
     }
 

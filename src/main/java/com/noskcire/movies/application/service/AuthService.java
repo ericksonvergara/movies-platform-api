@@ -10,11 +10,13 @@ import com.noskcire.movies.domain.model.User;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.PersonRepository;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.RoleRepository;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.UserRepository;
+import com.noskcire.movies.infrastructure.security.CustomUserDetailsService;
 import com.noskcire.movies.infrastructure.security.jwt.JwtService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final CustomUserDetailsService customUserDetailsService;
+
 
     @Transactional
     public AuthResponse register(
@@ -63,6 +67,7 @@ public class AuthService {
                 .password(passwordEncoder.encode(registerRequest.password()))
                 .enabled(true)
                 .person(person)
+                .role(role)
                 .build();
         userRepository.save(user);
 
@@ -79,19 +84,16 @@ public class AuthService {
                 )
         );
 
-        User user =
-                userRepository
-                        .findByUsername(
+        UserDetails userDetails =
+                customUserDetailsService
+                        .loadUserByUsername(
                                 loginRequest.username()
-                        )
-                        .orElseThrow();
+                        );
 
         String jwtToken =
-                jwtService.generateToken(user);
-
+                jwtService.generateToken(userDetails);
 
         return new AuthResponse(
-//                null,
                 jwtToken,
                 "Inicio de sesión exitoso."
         );
