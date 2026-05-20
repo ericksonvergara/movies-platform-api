@@ -2,7 +2,9 @@ package com.noskcire.movies.infrastructure.exception;
 
 import com.noskcire.movies.application.dto.response.ErrorResponse;
 import com.noskcire.movies.domain.exception.BadRequestException;
+import com.noskcire.movies.domain.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -42,5 +44,22 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
 
         );
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(
+            ResourceNotFoundException ex
+    ) {
+        ErrorResponse error =
+                new ErrorResponse(
+                        HttpStatus.NOT_FOUND.value(),
+                        ex.getMessage(),
+                        LocalDateTime.now()
+                );
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(error);
+
+
     }
 }
