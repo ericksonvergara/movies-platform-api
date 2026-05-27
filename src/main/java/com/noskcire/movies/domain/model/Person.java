@@ -1,5 +1,6 @@
 package com.noskcire.movies.domain.model;
 
+import com.noskcire.movies.domain.audit.BaseAuditEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Person {
+public class Person extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

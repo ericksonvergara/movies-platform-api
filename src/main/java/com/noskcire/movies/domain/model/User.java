@@ -1,5 +1,6 @@
 package com.noskcire.movies.domain.model;
 
+import com.noskcire.movies.domain.audit.BaseAuditEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class User extends BaseAuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

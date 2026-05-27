@@ -6,7 +6,14 @@ import com.noskcire.movies.application.dto.movie.UpdateMovieRequest;
 import com.noskcire.movies.domain.exception.ResourceNotFoundException;
 import com.noskcire.movies.domain.model.Movie;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.MovieRepository;
+import com.noskcire.movies.infrastructure.specification.GenericSpecification;
+import com.noskcire.movies.infrastructure.specification.MovieSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -89,9 +96,75 @@ public class MovieService {
         movie.setTitle(request.title());
         movie.setDescription(request.description());
         movie.setReleaseYear(request.releaseYear());
+        movie.setStock(request.stock());
         movie.setRentalPrice(request.rentalPrice());
         movieRepository.save(movie);
 
         return mapToResponse(movie);
+    }
+
+    public void deleteMovie(Long id){
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(
+                                "Pelicula no encontrada."
+                        )
+                );
+        movie.setDeleted(true);
+        movieRepository.save(movie);
+    }
+
+    public Page<MovieResponse> getMoviesPaginated(
+            int page,
+            int size,
+            String sortBy,
+            String direction
+    ) {
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable =
+                PageRequest.of(page, size, sort);
+
+        return movieRepository
+                .findAll(pageable)
+                .map(this::mapToResponse);
+    }
+
+    public Page<MovieResponse> searchMovies(
+            String title,
+            String gender,
+            Integer releaseYear,
+            int page,
+            int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Specification<Movie> spec =
+                Specification
+                        .where(
+                                GenericSpecification.<Movie>contains(
+                                        "title",
+                                        title
+                                )
+                        )
+                        .and(
+                                GenericSpecification.equalsTo(
+                                        "gender",
+                                        gender
+                                )
+                        )
+                        .and(
+                                GenericSpecification.equalsTo(
+                                        "releaseYear",
+                                        releaseYear
+                                )
+                        );
+
+        return movieRepository
+                .findAll(spec, pageable)
+                .map(this::mapToResponse);
     }
 }

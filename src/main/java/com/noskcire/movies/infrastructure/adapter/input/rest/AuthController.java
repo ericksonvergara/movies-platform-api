@@ -2,6 +2,7 @@ package com.noskcire.movies.infrastructure.adapter.input.rest;
 
 import com.noskcire.movies.application.dto.auth.AuthResponse;
 import com.noskcire.movies.application.dto.auth.LoginRequest;
+import com.noskcire.movies.application.dto.auth.RefreshTokenRequest;
 import com.noskcire.movies.application.dto.auth.RegisterRequest;
 import com.noskcire.movies.application.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +26,14 @@ public class AuthController {
     @PostMapping("/login")
     public AuthResponse login(@RequestBody LoginRequest request){
         return authService.login(request);
+    }
+
+    @PostMapping("/refresh")
+    public AuthResponse refreshToken(
+            @RequestBody
+            RefreshTokenRequest request
+    ) {
+
+        return authService.refreshToken(request);
     }
 }

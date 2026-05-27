@@ -1,19 +1,28 @@
 package com.noskcire.movies.domain.model;
 
+import com.noskcire.movies.domain.audit.BaseAuditEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "movies")
+@SQLDelete(sql = """
+        UPDATE movies
+        SET deleted = true
+        WHERE id = ?
+        """)
+@SQLRestriction("deleted = false")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Movie {
+public class Movie extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,4 +66,7 @@ public class Movie {
         this.updatedAt = LocalDateTime.now();
 
     }
+
+    @Column(nullable = false)
+    private boolean deleted = false;
 }
