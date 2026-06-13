@@ -1,14 +1,19 @@
 package com.noskcire.movies.domain.model;
 
 import com.noskcire.movies.domain.audit.BaseAuditEntity;
+import com.noskcire.movies.domain.enums.PersonType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "persons")
+@SQLDelete(sql = "UPDATE persons SET deleted = true WHERE id = ?")
+@SQLRestriction("deleted = false")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,7 +23,7 @@ public class Person extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String names;
     private String lastNames;
@@ -35,21 +40,10 @@ public class Person extends BaseAuditEntity {
 
     private LocalDate dateBirth;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PersonType type;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @PrePersist
-    public void prePersist(){
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void preUpdate(){
-        this.updatedAt = LocalDateTime.now();
-    }
-
+    @Column(nullable = false)
+    private boolean deleted = false;
 }

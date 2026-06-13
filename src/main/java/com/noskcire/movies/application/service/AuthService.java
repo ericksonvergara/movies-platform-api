@@ -4,6 +4,7 @@ import com.noskcire.movies.application.dto.auth.AuthResponse;
 import com.noskcire.movies.application.dto.auth.LoginRequest;
 import com.noskcire.movies.application.dto.auth.RefreshTokenRequest;
 import com.noskcire.movies.application.dto.auth.RegisterRequest;
+import com.noskcire.movies.domain.enums.PersonType;
 import com.noskcire.movies.domain.exception.BadRequestException;
 import com.noskcire.movies.domain.model.Person;
 import com.noskcire.movies.domain.model.RefreshToken;
@@ -51,7 +52,7 @@ public class AuthService {
             throw  new BadRequestException("El usuario ya existe.");
         }
         Role role = roleRepository
-                .findByName(registerRequest.role())
+                .findByName("CLIENT")
                 .orElseThrow(
                         () -> new BadRequestException(
                                 "El rol no existe."
@@ -66,6 +67,9 @@ public class AuthService {
                 .email(registerRequest.email())
                 .address(registerRequest.address())
                 .dateBirth(registerRequest.dateBirth())
+                .type(
+                    PersonType.CLIENT
+                )
                 .build();
         personRepository.save(person);
 

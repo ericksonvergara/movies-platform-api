@@ -3,6 +3,7 @@ package com.noskcire.movies.application.service;
 import com.noskcire.movies.application.dto.user.CreateUserRequest;
 import com.noskcire.movies.application.dto.user.UpdateUserRequest;
 import com.noskcire.movies.application.dto.user.UserResponse;
+import com.noskcire.movies.domain.enums.PersonType;
 import com.noskcire.movies.domain.exception.BadRequestException;
 import com.noskcire.movies.domain.exception.ResourceNotFoundException;
 import com.noskcire.movies.domain.model.Person;
@@ -100,6 +101,10 @@ public class UserService {
                         .email(createUserRequest.email())
                         .address(createUserRequest.address())
                         .dateBirth(createUserRequest.dateBirth())
+                        .type(PersonType.valueOf(
+                                role.getName()
+                                )
+                             )
                         .build();
         personRepository.save(person);
 
@@ -111,6 +116,7 @@ public class UserService {
                         )
                 )
                 .role(role)
+                .person(person)
                 .enabled(true)
                 .build();
 

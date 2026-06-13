@@ -1,8 +1,13 @@
-package com.noskcire.movies.application.dto.auth;
+package com.noskcire.movies.application.dto.person;
+
+import com.noskcire.movies.domain.enums.PersonType;
 
 import java.time.LocalDate;
 
-public record RegisterRequest (
+public record PersonResponse(
+
+        Long id,
+
         String names,
 
         String lastNames,
@@ -17,9 +22,6 @@ public record RegisterRequest (
 
         LocalDate dateBirth,
 
-        String username,
-
-        String password
-
-        //String role
-){}
+        PersonType type
+) {
+}

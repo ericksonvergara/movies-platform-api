@@ -7,93 +7,248 @@
 </h1>
 
 <p align="center">
-  Sistema de alquiler de películas desarrollado con Spring Boot, React y PostgreSQL.
+  Sistema de gestión y alquiler de películas desarrollado con Spring Boot, PostgreSQL y React.
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Java-17-orange">
-  <img src="https://img.shields.io/badge/SpringBoot-3.x-green">
-  <img src="https://img.shields.io/badge/PostgreSQL-Database-blue">
-  <img src="https://img.shields.io/badge/React-Frontend-61DAFB">
+  <img src="https://img.shields.io/badge/SpringBoot-4.x-green">
+  <img src="https://img.shields.io/badge/PostgreSQL-14-blue">
+  <img src="https://img.shields.io/badge/JWT-Security-red">
+  <img src="https://img.shields.io/badge/Architecture-Hexagonal-purple">
 </p>
 
-## 🚀 Tecnologías
+---
 
-### Backend
-- Java 17
-- Spring Boot
-- Spring Security
-- Maven
-- PostgreSQL
-- JWT Authentication
-- Arquitectura Hexagonal
+# 📖 Descripción
 
-### Frontend
-- React
-- Axios
-- React Router
+Movies Platform es una aplicación para la administración de un videoclub, permitiendo gestionar usuarios, clientes, empleados, películas y alquileres mediante una API REST segura basada en JWT.
 
-## 🔐 Funcionalidades iniciales
-- Registro de usuarios
-- Inicio de sesión
-- Gestión de roles
-- Autenticación con Spring Security
-- Encriptación de contraseñas con BCrypt
-- Manejo global de excepciones
-- API REST
+El proyecto implementa Arquitectura Hexagonal (Ports & Adapters) para garantizar desacoplamiento, mantenibilidad y escalabilidad.
 
-## 🏗 Arquitectura
-El proyecto implementa Arquitectura Hexagonal (Ports & Adapters), separando:
+---
 
-- Domain
-- Application
-- Infrastructure
+# 🚀 Tecnologías
 
-Con el objetivo de desacoplar la lógica de negocio de frameworks y tecnologías externas.
+## Backend
 
-## 📦 Base de datos
-Motor de base de datos utilizado:
+* Java 17
+* Spring Boot
+* Spring Security
+* Spring Data JPA
+* Hibernate
+* JWT Authentication
+* Maven
+* PostgreSQL
+* Lombok
 
-- PostgreSQL
+## Frontend
 
-## 👥 Roles del sistema
-- ADMIN
-- EMPLOYEE
-- CLIENT
+* React
+* Axios
+* React Router
 
-## ⚙️ Ejecución del proyecto
+---
 
-### 1️⃣ Clonar el repositorio
+# 🏗 Arquitectura
+
+El proyecto sigue una Arquitectura Hexagonal organizada en:
+
+```text
+src/main/java
+│
+├── application
+│   ├── dto
+│   ├── service
+│
+├── domain
+│   ├── model
+│   ├── enums
+│   ├── exception
+│
+├── infrastructure
+│   ├── adapter
+│   │   ├── input
+│   │   └── output
+│
+└── config
+```
+
+Principios aplicados:
+
+* Separación de responsabilidades
+* Inversión de dependencias
+* Bajo acoplamiento
+* Alta cohesión
+
+---
+
+# 🔐 Seguridad
+
+La aplicación implementa:
+
+* JWT Access Token
+* JWT Refresh Token
+* Spring Security
+* BCrypt Password Encoder
+* Control de roles
+* Usuarios habilitados/deshabilitados
+* Protección de endpoints mediante autorización
+
+---
+
+# 👥 Roles del sistema
+
+## ADMIN
+
+Puede:
+
+* Gestionar usuarios
+* Gestionar clientes
+* Gestionar empleados
+* Gestionar películas
+* Gestionar alquileres
+
+## EMPLOYEE
+
+Puede:
+
+* Registrar clientes
+* Gestionar alquileres
+* Registrar devoluciones
+* Consultar películas
+
+## CLIENT
+
+Puede:
+
+* Registrarse en la plataforma
+* Iniciar sesión
+* Realizar reservas (próximamente)
+
+---
+
+# 📦 Módulos implementados
+
+## Autenticación
+
+* Registro de usuarios
+* Inicio de sesión
+* Refresh Token
+* Gestión de roles
+* Activación y desactivación de usuarios
+
+## Personas
+
+* Crear personas
+* Actualizar personas
+* Consultar personas
+* Clientes independientes de usuarios
+
+## Usuarios
+
+* Crear usuarios
+* Actualizar roles
+* Activar usuarios
+* Desactivar usuarios
+
+## Películas
+
+* Crear películas
+* Actualizar películas
+* Consultar películas
+* Control de stock
+* Habilitar y deshabilitar películas
+
+## Alquileres
+
+* Registrar alquileres
+* Validar disponibilidad de stock
+* Calcular totales
+* Registrar devoluciones
+* Restituir inventario
+* Control de estado de alquiler
+
+---
+
+# 📊 Modelo de negocio actual
+
+```text
+Person
+│
+├── CLIENT
+├── EMPLOYEE
+└── ADMIN
+
+User
+│
+└── Acceso al sistema
+
+Movie
+│
+└── Inventario
+
+Rental
+│
+└── Alquiler
+
+RentalDetail
+│
+└── Películas alquiladas
+```
+
+---
+
+# 🗄 Base de datos
+
+Motor utilizado:
+
+* PostgreSQL 14
+
+Entidades principales:
+
+* users
+* persons
+* roles
+* movies
+* rentals
+* rental_details
+
+---
+
+# ⚙️ Ejecución del proyecto
+
+## Clonar repositorio
 
 ```bash
 git clone URL_DEL_REPOSITORIO
 ```
 
----
-
-### 2️⃣ Ingresar al directorio del proyecto
-
-Ejemplo en Windows:
+## Ingresar al directorio
 
 ```bash
-cd C:\Users\TuUsuario\Documents\movies-platform
+cd movies-platform
 ```
 
-Ejemplo en Linux/Mac:
+## Configurar base de datos
 
-```bash
-cd /home/usuario/projects/movies-platform
+Actualizar el archivo:
+
+```properties
+application.yml
 ```
 
----
+con las credenciales de PostgreSQL.
 
-### 3️⃣ Ejecutar el backend
+## Ejecutar aplicación
+
+Linux / Mac:
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-Si estás en Windows y el comando anterior falla:
+Windows:
 
 ```bash
 mvnw.cmd spring-boot:run
@@ -101,15 +256,52 @@ mvnw.cmd spring-boot:run
 
 ---
 
-### 4️⃣ Acceder al proyecto
+# 📚 Documentación API
 
-Backend disponible en:
+Swagger UI:
 
 ```text
-http://localhost:8080
+http://localhost:8088/swagger-ui/index.html
 ```
 
-## 📌 Estado del proyecto
+OpenAPI:
 
-🚧 En desarrollo.
+```text
+http://localhost:8088/v3/api-docs
+```
 
+---
+
+# 🚧 Próximas funcionalidades
+
+* Reservas de películas
+* Multas por retraso
+* Dashboard administrativo
+* Reportes
+* Historial de alquileres
+* Catálogo público
+* Frontend completo en React
+
+---
+
+# 📌 Estado del proyecto
+
+🟢 Backend funcional en desarrollo activo.
+
+Módulos completados:
+
+✅ Seguridad y autenticación
+
+✅ Gestión de personas
+
+✅ Gestión de usuarios
+
+✅ Gestión de películas
+
+✅ Gestión de alquileres
+
+🚧 Reservas
+
+🚧 Reportes
+
+🚧 Dashboard
