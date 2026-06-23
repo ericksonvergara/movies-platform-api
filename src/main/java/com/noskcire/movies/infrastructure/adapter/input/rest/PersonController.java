@@ -31,11 +31,13 @@ public class PersonController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public List<PersonResponse> getAllPersons() {
         return personService.getAllPersons();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public PersonResponse getPersonById(
             @PathVariable Long id
     ) {
@@ -43,6 +45,7 @@ public class PersonController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public PersonResponse updatePerson(
             @PathVariable Long id,
             @Valid
@@ -53,6 +56,7 @@ public class PersonController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePerson(
             @PathVariable Long id

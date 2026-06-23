@@ -1,5 +1,8 @@
 package com.noskcire.movies.infrastructure.security.jwt;
 
+import com.noskcire.movies.domain.enums.TokenType;
+import com.noskcire.movies.domain.model.Token;
+import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.TokenRepository;
 import com.noskcire.movies.infrastructure.security.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,6 +24,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
+    private final TokenRepository tokenRepository;
 
     @Override
     protected void doFilterInternal(
@@ -44,6 +48,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         jwt = authHeader.substring(7);
+
+        Token token =
+                tokenRepository.findByTokenAndRevokedFalse(
+                        jwt
+                ).orElse(null);
+
+        if (token == null
+                || token.getType()
+        != TokenType.ACCESS) {
+            response.setStatus(
+                    HttpServletResponse.SC_UNAUTHORIZED
+            );
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
+            response.getWriter().write("""
+                {
+                    "success": false,
+                    "message": "Token inválido o sesión finalizada",
+                    "data": null
+                }
+                """);
+            return;
+        }
+
         username = jwtService.extractUsername(jwt);
 
         if (username != null && SecurityContextHolder
@@ -56,9 +85,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             .loadUserByUsername(
                                     username
                             );
-            if (jwtService.IsTokenValid(
-                    jwt,
-                    userDetails
+            if (
+                    userDetails.isEnabled()
+                    && jwtService.IsTokenValid(
+                        jwt,
+                        userDetails
                 )
             ) {
                 UsernamePasswordAuthenticationToken authenticationToken =

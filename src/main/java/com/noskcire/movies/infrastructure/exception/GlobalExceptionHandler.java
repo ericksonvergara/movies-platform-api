@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -82,9 +83,9 @@ public class GlobalExceptionHandler {
                 .body(error);
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
+    @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDenied(
-            AccessDeniedException ex
+            AuthorizationDeniedException ex
     ) {
         ErrorResponse error =
                 new ErrorResponse(
@@ -110,6 +111,8 @@ public class GlobalExceptionHandler {
                         null,
                         LocalDateTime.now()
                 );
+
+        System.out.println("--------->" + ex.getClass().getName());
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)

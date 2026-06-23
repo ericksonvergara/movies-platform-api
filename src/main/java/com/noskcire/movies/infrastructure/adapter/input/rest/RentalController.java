@@ -35,6 +35,7 @@ public class RentalController {
     }
 
     @PostMapping("/{id}/return")
+    @PreAuthorize("hasRole('EMPLOYEE') or hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public RentalResponse returnRental(
             @PathVariable Long id

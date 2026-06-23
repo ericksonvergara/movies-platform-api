@@ -5,13 +5,15 @@ import com.noskcire.movies.application.dto.auth.LoginRequest;
 import com.noskcire.movies.application.dto.auth.RefreshTokenRequest;
 import com.noskcire.movies.application.dto.auth.RegisterRequest;
 import com.noskcire.movies.domain.enums.PersonType;
+import com.noskcire.movies.domain.enums.TokenType;
 import com.noskcire.movies.domain.exception.BadRequestException;
+import com.noskcire.movies.domain.exception.ResourceNotFoundException;
 import com.noskcire.movies.domain.model.Person;
-import com.noskcire.movies.domain.model.RefreshToken;
+import com.noskcire.movies.domain.model.Token;
 import com.noskcire.movies.domain.model.Role;
 import com.noskcire.movies.domain.model.User;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.PersonRepository;
-import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.RefreshTokenRepository;
+import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.TokenRepository;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.RoleRepository;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.UserRepository;
 import com.noskcire.movies.infrastructure.security.CustomUserDetailsService;
@@ -20,11 +22,14 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -37,8 +42,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
-    private final RefreshTokenService refreshTokenService;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final TokenRepository tokenRepository;
 
 
     @Transactional
@@ -82,6 +86,16 @@ public class AuthService {
                 .build();
         userRepository.save(user);
 
+        List<Token> activeTokens =
+                tokenRepository
+                        .findByUserAndRevokedFalse(user);
+
+        activeTokens.forEach(token ->
+                token.setRevoked(true)
+        );
+
+        tokenRepository.saveAll(activeTokens);
+
         UserDetails userDetails =
                 customUserDetailsService
                         .loadUserByUsername(
@@ -94,9 +108,18 @@ public class AuthService {
         String refreshToken =
                 jwtService.generateRefreshToken(userDetails);
 
-        refreshTokenService.createRefreshToken(
+        saveToken(
                 user,
-                refreshToken
+                accessToken,
+                TokenType.ACCESS,
+                LocalDateTime.now().plusHours(1)
+        );
+
+        saveToken(
+                user,
+                refreshToken,
+                TokenType.REFRESH,
+                LocalDateTime.now().plusDays(7)
         );
 
         return new AuthResponse(
@@ -120,6 +143,16 @@ public class AuthService {
                         loginRequest.username()
                 ).orElseThrow();
 
+        List<Token> activeTokens =
+                tokenRepository
+                        .findByUserAndRevokedFalse(user);
+
+        activeTokens.forEach(token ->
+                token.setRevoked(true)
+        );
+
+        tokenRepository.saveAll(activeTokens);
+
 
         UserDetails userDetails =
                 customUserDetailsService
@@ -133,9 +166,18 @@ public class AuthService {
         String refreshToken =
                 jwtService.generateRefreshToken(userDetails);
 
-        refreshTokenService.createRefreshToken(
+        saveToken(
                 user,
-                refreshToken
+                accessToken,
+                TokenType.ACCESS,
+                LocalDateTime.now().plusHours(1)
+        );
+
+        saveToken(
+                user,
+                refreshToken,
+                TokenType.REFRESH,
+                LocalDateTime.now().plusDays(7)
         );
 
         return new AuthResponse(
@@ -145,11 +187,30 @@ public class AuthService {
         );
     }
 
+    private void saveToken(
+            User user,
+            String jwt,
+            TokenType type,
+            LocalDateTime expiresAt
+    ) {
+
+        Token token =
+                Token.builder()
+                        .user(user)
+                        .token(jwt)
+                        .type(type)
+                        .expiresAt(expiresAt)
+                        .revoked(false)
+                        .build();
+
+        tokenRepository.save(token);
+    }
+
     public AuthResponse refreshToken(
             RefreshTokenRequest refreshTokenRequest
     ){
-        RefreshToken refreshToken =
-                refreshTokenRepository
+        Token token =
+                tokenRepository
                         .findByTokenAndRevokedFalse(
                                 refreshTokenRequest.refreshToken()
                         )
@@ -160,17 +221,14 @@ public class AuthService {
                         );
 
         if (
-                refreshToken.getExpiresAt()
-                        .isBefore(
-                                LocalDateTime.now()
-                        )
-        ) {
-            throw new BadRequestException(
-                    "Refresh token expirado."
-            );
+                token.getType()
+                    != TokenType.REFRESH){
+                throw new BadRequestException(
+                        "Refresh token invalido."
+                );
         }
 
-        User user = refreshToken.getUser();
+        User user = token.getUser();
 
         UserDetails userDetails =
                 customUserDetailsService
@@ -183,9 +241,40 @@ public class AuthService {
 
         return new AuthResponse(
                 newAccessToken,
-                refreshToken.getToken(),
+                token.getToken(),
                 "Token renovado correctamente."
         );
+
+    }
+
+    public void logout(){
+
+        Authentication authentication =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication();
+
+        String username = authentication.getName();
+
+        User user =
+                userRepository
+                        .findByUsername(username)
+                        .orElseThrow(
+                                () -> new ResourceNotFoundException(
+                                        "Usuario no encontrado."
+                                )
+                        );
+
+        List<Token> tokens =
+                tokenRepository
+                        .findByUserAndRevokedFalse(user);
+
+        tokens.forEach(token ->
+                token.setRevoked(true)
+        );
+
+        tokenRepository.saveAll(tokens);
+        SecurityContextHolder.clearContext();
 
     }
 
