@@ -4,6 +4,7 @@ import com.noskcire.movies.domain.enums.RentalStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record RentalResponse(
@@ -13,7 +14,7 @@ public record RentalResponse(
         String employeeUsername,
         LocalDate rentalDate,
         LocalDate expectedReturnDate,
-        LocalDate returnedDate,
+        LocalDateTime returnedDate,
         RentalStatus status,
         BigDecimal total,
         List<RentalDetailResponse> details

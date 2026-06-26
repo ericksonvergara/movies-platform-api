@@ -9,6 +9,7 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Locale;
 
 @Entity
@@ -30,7 +31,7 @@ public class Rental extends BaseAuditEntity {
 
     private LocalDate expectedReturnDate;
 
-    private LocalDate returnedDate;
+    private LocalDateTime returnedDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

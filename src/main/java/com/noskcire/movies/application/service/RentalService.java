@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -217,6 +218,51 @@ public class RentalService {
         return mapToResponse(rental);
     }
 
+    public List<RentalResponse> getAllRentals(){
+        List<Rental> rentals = rentalRepository.findAll();
+        return rentals.stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    public List<RentalResponse> getRentalActive(){
+        List<Rental> rentals =
+                rentalRepository
+                        .findByStatus(
+                                RentalStatus.ACTIVE
+                        );
+        return rentals.stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    public List<RentalResponse> getRentalReturned(){
+        List<Rental> rentals =
+                rentalRepository
+                        .findByStatus(
+                                RentalStatus.RETURNED
+                        );
+        return rentals.stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    public List<RentalResponse> getRentalsByClientId(
+            Long clientId
+    ){
+        Person client = personRepository
+                .findById(clientId)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(
+                                "Cliente no encontrado."
+                        )
+                );
+        List<Rental> rentals = rentalRepository.findByClient(client);
+        return rentals.stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
     public RentalResponse returnRental(
             Long rentalId
     ){
@@ -247,9 +293,42 @@ public class RentalService {
             movieRepository.save(movie);
         }
 
-        rental.setReturnedDate(LocalDate.now());
+        rental.setReturnedDate(LocalDateTime.now());
         rental.setStatus(RentalStatus.RETURNED);
         rentalRepository.save(rental);
         return mapToResponse(rental);
+    }
+
+    public List<RentalResponse> getOverdueRentals(){
+        List<Rental> rentals =
+                rentalRepository
+                        .findByStatusAndExpectedReturnDateBefore(
+                                RentalStatus.ACTIVE,
+                                LocalDate.now()
+                        );
+        return rentals.stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    public List<RentalResponse> getRentalsByEmployeeId(
+            Long employeeId
+    ){
+        User employee = userRepository
+                .findById(employeeId)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(
+                                "Empleado no encontrado."
+                        )
+                );
+        if (!employee.getRole().getName().equals("EMPLOYEE")) {
+            throw new BadRequestException(
+                    "El usuario no corresponde a un empleado."
+            );
+        }
+        List<Rental> rentals = rentalRepository.findByEmployee(employee);
+        return rentals.stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 }

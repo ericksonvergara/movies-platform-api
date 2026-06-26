@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/rentals")
 @RequiredArgsConstructor
@@ -34,6 +36,32 @@ public class RentalController {
         return rentalService.getRentalById(id);
     }
 
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public List<RentalResponse> getAllRentals() {
+        return rentalService.getAllRentals();
+    }
+
+    @GetMapping("/active")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public List<RentalResponse> getActiveRentals() {
+        return rentalService.getRentalActive();
+    }
+
+    @GetMapping("/returned")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public List<RentalResponse> getReturnedRentals() {
+        return rentalService.getRentalReturned();
+    }
+
+    @GetMapping("/client/{clientId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public List<RentalResponse> getRentalsByClientId(
+            @PathVariable Long clientId
+    ) {
+        return rentalService.getRentalsByClientId(clientId);
+    }
+
     @PostMapping("/{id}/return")
     @PreAuthorize("hasRole('EMPLOYEE') or hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
@@ -43,4 +71,17 @@ public class RentalController {
         return  rentalService.returnRental(id);
     }
 
+    @GetMapping("/overdure")
+    @PreAuthorize("hasRole('EMPLOYEE') or hasRole('ADMIN')")
+    public List<RentalResponse> getOverdueRentals() {
+        return rentalService.getOverdueRentals();
+    }
+
+    @GetMapping("/employee/{employeeId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public List<RentalResponse> getRentalsByEmployeeId(
+            @PathVariable Long employeeId
+    ) {
+        return rentalService.getRentalsByEmployeeId(employeeId);
+    }
 }
