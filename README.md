@@ -169,6 +169,15 @@ Puede:
 * Restituir inventario
 * Control de estado de alquiler
 
+### Gestión de Multas
+
+* Generación automática de multas por retraso.
+* Cálculo dinámico del valor diario.
+* Congelación automática al devolver la renta.
+* Registro del pago de multas.
+* Consulta por estado (ACTIVE, PENDING, PAID).
+* Auditoría completa de creación y actualización.
+
 ---
 
 # 📊 Modelo de negocio actual
@@ -195,6 +204,10 @@ Rental
 RentalDetail
 │
 └── Películas alquiladas
+
+LateFee
+│
+└── Multas por retraso
 ```
 
 ---
@@ -213,6 +226,7 @@ Entidades principales:
 * movies
 * rentals
 * rental_details
+* late_fees
 
 ---
 
@@ -275,7 +289,6 @@ http://localhost:8088/v3/api-docs
 # 🚧 Próximas funcionalidades
 
 * Reservas de películas
-* Multas por retraso
 * Dashboard administrativo
 * Reportes
 * Historial de alquileres
@@ -299,6 +312,8 @@ Módulos completados:
 ✅ Gestión de películas
 
 ✅ Gestión de alquileres
+
+✅ Multas por retraso
 
 🚧 Reservas
 

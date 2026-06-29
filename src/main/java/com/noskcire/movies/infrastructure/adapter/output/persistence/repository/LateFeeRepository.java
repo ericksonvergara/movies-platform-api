@@ -12,4 +12,6 @@ public interface LateFeeRepository extends JpaRepository<LateFee, Long> {
 
     Optional<LateFee> findByRental(Rental rental);
     List<LateFee> findByStatus(LateFeeStatus status);
+
+    boolean existsByRental(Rental rental);
 }

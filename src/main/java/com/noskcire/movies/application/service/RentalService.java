@@ -32,6 +32,7 @@ public class RentalService {
     private final PersonRepository personRepository;
     private final MovieRepository movieRepository;
     private final UserRepository userRepository;
+    private final LateFeeService lateFeeService;
 
     private User getAuthenticatedEmployee(){
         Authentication authentication =
@@ -296,6 +297,8 @@ public class RentalService {
         rental.setReturnedDate(LocalDateTime.now());
         rental.setStatus(RentalStatus.RETURNED);
         rentalRepository.save(rental);
+//        lateFeeService.generateLateFee(rental);
+        lateFeeService.finalizeLateFee(rental);
         return mapToResponse(rental);
     }
 

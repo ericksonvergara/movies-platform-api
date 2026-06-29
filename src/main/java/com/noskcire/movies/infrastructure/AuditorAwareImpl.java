@@ -18,8 +18,9 @@ public class AuditorAwareImpl
                         .getAuthentication();
 
         if (
-                authentication != null
+                authentication == null
                 || !authentication.isAuthenticated()
+                        || "anonymousUser".equals(authentication.getName())
         ) {
             return Optional.of("SYSTEM");
         }

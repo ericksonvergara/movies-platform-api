@@ -1,14 +1,13 @@
 package com.noskcire.movies.infrastructure.adapter.input.rest;
 
 import com.noskcire.movies.application.dto.lateFee.LateFeeResponse;
+import com.noskcire.movies.application.dto.lateFee.PayLateFeeRequest;
 import com.noskcire.movies.application.service.LateFeeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,6 +32,12 @@ public class LateFeeController {
         return lateFeeService.getLateFeeById(id);
     }
 
+    @GetMapping("/active")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public List<LateFeeResponse> getActiveLateFees(){
+        return lateFeeService.getActiveLateFees();
+    }
+
     @GetMapping("/pending")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public List<LateFeeResponse> getPendingLateFees(){
@@ -43,5 +48,15 @@ public class LateFeeController {
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public List<LateFeeResponse> getPaidLateFees(){
         return lateFeeService.getPaidLateFees();
+    }
+
+    @PatchMapping("/{id}/pay")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public LateFeeResponse payLateFee(
+            @PathVariable Long id,
+            @Valid
+            @RequestBody PayLateFeeRequest request
+    ) {
+        return lateFeeService.payLateFee(id, request);
     }
 }
