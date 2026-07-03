@@ -33,6 +33,7 @@ public class RentalService {
     private final MovieRepository movieRepository;
     private final UserRepository userRepository;
     private final LateFeeService lateFeeService;
+    private final ReservationService reservationService;
 
     private User getAuthenticatedEmployee(){
         Authentication authentication =
@@ -136,6 +137,11 @@ public class RentalService {
             );
             movieRepository.save(movie);
 
+            reservationService.fulfillReservation(
+                    client,
+                    movie
+            );
+
             RentalDetail detail =
                     RentalDetail.builder()
                             .rental(rental)
@@ -147,6 +153,8 @@ public class RentalService {
                             .build();
 
             details.add(detail);
+
+
         }
 
         rentalDetailRepository.saveAll(details);
@@ -292,6 +300,7 @@ public class RentalService {
             );
 
             movieRepository.save(movie);
+            reservationService.activateNextReservation(movie);
         }
 
         rental.setReturnedDate(LocalDateTime.now());
@@ -334,4 +343,5 @@ public class RentalService {
                 .map(this::mapToResponse)
                 .toList();
     }
+
 }

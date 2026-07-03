@@ -112,7 +112,6 @@ public class GlobalExceptionHandler {
                         LocalDateTime.now()
                 );
 
-        System.out.println("--------->" + ex.getClass().getName());
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)

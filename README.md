@@ -169,7 +169,7 @@ Puede:
 * Restituir inventario
 * Control de estado de alquiler
 
-### Gestión de Multas
+## Gestión de Multas
 
 * Generación automática de multas por retraso.
 * Cálculo dinámico del valor diario.
@@ -177,6 +177,17 @@ Puede:
 * Registro del pago de multas.
 * Consulta por estado (ACTIVE, PENDING, PAID).
 * Auditoría completa de creación y actualización.
+
+## Módulo de Reservas
+
+* Creación de reservas de películas sin disponibilidad.
+* Cancelación de reservas activas.
+* Gestión de la cola de reservas mediante el algoritmo FIFO (First In, First Out).
+* Activación automática de la siguiente reserva cuando una película es devuelta.
+* Expiración automática de reservas notificadas al vencer el tiempo límite para reclamar la película.
+* Activación automática del siguiente cliente en la cola cuando una reserva expira.
+* Finalización automática de la reserva cuando el cliente realiza el alquiler de la película.
+* Control de acceso basado en roles (Administrador, Empleado y Cliente).
 
 ---
 
@@ -208,6 +219,10 @@ RentalDetail
 LateFee
 │
 └── Multas por retraso
+
+Reservation
+│
+└── Reservas de películas
 ```
 
 ---
@@ -227,6 +242,7 @@ Entidades principales:
 * rentals
 * rental_details
 * late_fees
+* reservations
 
 ---
 
@@ -315,7 +331,7 @@ Módulos completados:
 
 ✅ Multas por retraso
 
-🚧 Reservas
+✅ Reservas
 
 🚧 Reportes
 
