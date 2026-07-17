@@ -1,11 +1,12 @@
 package com.noskcire.movies.infrastructure.adapter.input.rest;
 
+import com.noskcire.movies.application.dto.report.ClientRankingResult;
 import com.noskcire.movies.application.dto.report.DashboardResponse;
-import com.noskcire.movies.application.dto.report.MovieRankingResponse;
 import com.noskcire.movies.application.dto.report.MovieRankingResult;
 import com.noskcire.movies.application.service.RankingReportService;
 import com.noskcire.movies.application.service.ReportService;
 import com.noskcire.movies.application.validation.ValidLimit;
+import com.noskcire.movies.domain.enums.ClientRankingSort;
 import com.noskcire.movies.domain.enums.MovieRankingSort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,8 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/reports")
@@ -43,5 +42,17 @@ public class ReportController {
             MovieRankingSort sort
     ) {
         return rankingReportService.getMovieRanking(limit, sort);
+    }
+
+    @GetMapping("/rankings/clients")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public ClientRankingResult getClientRanking(
+            @RequestParam(defaultValue = "10")
+            @ValidLimit
+            Integer limit,
+            @RequestParam(defaultValue = "RENTALS")
+            ClientRankingSort sort
+    ) {
+        return rankingReportService.getClientRanking(limit, sort);
     }
 }

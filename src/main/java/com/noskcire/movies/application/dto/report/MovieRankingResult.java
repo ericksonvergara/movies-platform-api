@@ -8,7 +8,7 @@ public record MovieRankingResult(
 
         Integer limit,
 
-        MovieRankingSort sort,
+        MovieRankingSort sortBy,
 
         Integer totalResults,
 
