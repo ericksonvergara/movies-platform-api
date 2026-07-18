@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/movies
+    url: jdbc:postgresql://db.mnkhvuueujpudubdnzad.supabase.co:5432/postgres
     username: postgres
-    password: admin
+    password: yWn1yh2DSqO7s9ZQ
 
   jpa:
     hibernate:

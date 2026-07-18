@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-@Table(name = "reservations")
+@Table(name = "reservations", schema = "movies")
 @Getter
 @Setter
 @Builder

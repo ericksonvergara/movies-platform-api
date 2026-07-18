@@ -6,7 +6,7 @@ import java.util.List;
 
 public record ClientRankingResult(
         Integer limit,
-        ClientRankingSort sort,
+        ClientRankingSort sortBy,
         Integer totalResults,
         List<ClientRankingResponse> data
 ) {

@@ -13,7 +13,7 @@ public record CreateRentalRequest(
         Long clientId,
 
         @NotNull(message = "La fecha de devolución")
-        @Future(message = "LLa frcha de devolución debe ser futura")
+        @Future(message = "La fecha de devolución debe ser futura")
         LocalDate expectedReturnDate,
 
         @NotEmpty(message = "Debe seleccionar al menos una pelicula.")

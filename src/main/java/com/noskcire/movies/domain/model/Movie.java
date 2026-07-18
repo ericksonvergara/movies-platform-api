@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "movies")
+@Table(name = "movies", schema = "movies")
 @SQLDelete(sql = """
         UPDATE movies
         SET deleted = true
