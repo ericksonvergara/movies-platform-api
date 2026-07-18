@@ -1,9 +1,6 @@
 package com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report;
 
-import com.noskcire.movies.domain.enums.ClientRankingSort;
-import com.noskcire.movies.domain.enums.LateFeeRankingSort;
-import com.noskcire.movies.domain.enums.MovieRankingSort;
-import com.noskcire.movies.domain.enums.RentalStatus;
+import com.noskcire.movies.domain.enums.*;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ClientRankingProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.LateFeeRankingProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.MovieRankingProjection;
@@ -24,6 +21,9 @@ public class RankingReportRepositoryImpl
 
     private static final String CLIENT_RANKING_PROJECTION =
             ClientRankingProjection.class.getCanonicalName();
+
+    private static final String LATEFEE_RANKING_PROJECTION =
+            LateFeeRankingProjection.class.getCanonicalName();
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -110,7 +110,55 @@ public class RankingReportRepositoryImpl
 
     @Override
     public List<LateFeeRankingProjection> getLateFeeRanking(Integer limit, LateFeeRankingSort sort) {
-        return List.of();
+        String jpql = String.format("""
+                        SELECT NEW %s(
+                            p.id,
+                            CONCAT (p.names, ' ', p.lastNames),
+                            COUNT(lf.id),
+                            SUM(
+                                CASE
+                                    WHEN lf.status= :pendingStatus
+                                    THEN 1
+                                    ELSE 0
+                                END
+                            ),
+                            SUM(
+                                CASE
+                                    WHEN lf.status= :paidStatus
+                                    THEN 1
+                                    ELSE 0
+                                END
+                            ),
+                            COALESCE(SUM(lf.totalAmount), 0)
+                        )
+                        FROM LateFee lf
+                        JOIN lf.rental r
+                        JOIN r.client p
+                        GROUP BY
+                            p.id,
+                            p.names,
+                            p.lastNames
+                        ORDER BY %s DESC
+                        """,
+                        LATEFEE_RANKING_PROJECTION,
+                        sort.getExpression()
+        );
+
+        return entityManager
+                .createQuery(
+                        jpql,
+                        LateFeeRankingProjection.class
+                )
+                .setParameter(
+                        "pendingStatus",
+                        LateFeeStatus.PENDING
+                )
+                .setParameter(
+                        "paidStatus",
+                        LateFeeStatus.PAID
+                )
+                .setMaxResults(limit)
+                .getResultList();
     }
 
 

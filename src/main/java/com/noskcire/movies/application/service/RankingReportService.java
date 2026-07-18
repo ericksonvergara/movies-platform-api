@@ -1,14 +1,13 @@
 package com.noskcire.movies.application.service;
 
-import com.noskcire.movies.application.dto.report.ClientRankingResponse;
-import com.noskcire.movies.application.dto.report.ClientRankingResult;
-import com.noskcire.movies.application.dto.report.MovieRankingResponse;
+import com.noskcire.movies.application.dto.report.*;
 
-import com.noskcire.movies.application.dto.report.MovieRankingResult;
 import com.noskcire.movies.domain.enums.ClientRankingSort;
+import com.noskcire.movies.domain.enums.LateFeeRankingSort;
 import com.noskcire.movies.domain.enums.MovieRankingSort;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.RankingReportRepository;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ClientRankingProjection;
+import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.LateFeeRankingProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.MovieRankingProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -62,9 +61,9 @@ public class RankingReportService {
             Integer limit,
             ClientRankingSort sort
     ) {
-//        if (limit == null || limit <= 0) {
-//            limit = 10;
-//        }
+        if (limit == null || limit <= 0) {
+            limit = 10;
+        }
 
         List<ClientRankingProjection> rankings =
                 rankingReportRepository.getClientRanking(
@@ -84,6 +83,41 @@ public class RankingReportService {
                         .toList();
 
         return new ClientRankingResult(
+                limit,
+                sort,
+                data.size(),
+                data
+        );
+    }
+
+    public LateFeeRankingResult getLateFeeRanking(
+            Integer limit,
+            LateFeeRankingSort sort
+    ){
+        if (limit == null || limit <= 0){
+            limit = 10;
+        }
+
+        List<LateFeeRankingProjection> rankings =
+                rankingReportRepository.getLateFeeRanking(
+                        limit,
+                        sort
+                );
+
+        List<LateFeeRankingResponse> data =
+                rankings.stream()
+                        .map(ranking -> new LateFeeRankingResponse(
+                                ranking.clientId(),
+                                ranking.clientName(),
+                                ranking.totalLateFees(),
+                                ranking.pendingLateFees(),
+                                ranking.paidLateFees(),
+                                ranking.totalAmount())
+
+                        )
+                        .toList();
+
+        return new LateFeeRankingResult(
                 limit,
                 sort,
                 data.size(),

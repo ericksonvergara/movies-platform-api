@@ -8,6 +8,7 @@ import com.noskcire.movies.application.service.RankingReportService;
 import com.noskcire.movies.application.service.ReportService;
 import com.noskcire.movies.application.validation.ValidLimit;
 import com.noskcire.movies.domain.enums.ClientRankingSort;
+import com.noskcire.movies.domain.enums.LateFeeRankingSort;
 import com.noskcire.movies.domain.enums.MovieRankingSort;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -58,12 +59,20 @@ public class ReportController {
         return rankingReportService.getClientRanking(limit, sort);
     }
 
-//    @GetMapping("/rankings/late-fees")
-//    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
-//    public LateFeeRankingResult getLateFeeRanking(
-//            @RequestParam(defaultValue = "10")
-//            @ValidLimit
-//            Integer limit,
-//            @RequestParam
-//    )
+    @GetMapping("/rankings/late-fees")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public LateFeeRankingResult getLateFeeRanking(
+            @RequestParam(defaultValue = "10")  
+            @ValidLimit
+            Integer limit,
+
+            @RequestParam(defaultValue = "COUNT")
+            LateFeeRankingSort sort
+    ) {
+
+        return rankingReportService.getLateFeeRanking(
+                limit,
+                sort
+        );
+    }
 }
