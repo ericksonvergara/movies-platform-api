@@ -6,6 +6,7 @@ public record LateFeeRankingResponse(
         Long clientId,
         String clientName,
         Long totalLateFees,
+        Long activeLateFees,
         Long pendingLateFees,
         Long paidLateFees,
         BigDecimal totalAmount

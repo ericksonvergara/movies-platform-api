@@ -110,10 +110,10 @@ public class RankingReportService {
                                 ranking.clientId(),
                                 ranking.clientName(),
                                 ranking.totalLateFees(),
+                                ranking.activeLateFees(),
                                 ranking.pendingLateFees(),
                                 ranking.paidLateFees(),
                                 ranking.totalAmount())
-
                         )
                         .toList();
 

@@ -38,22 +38,22 @@ public class LateFeeService {
             LateFee lateFee
     ) {
 
-        Long daysLate = lateFee.getDaysLate();
-        BigDecimal totalAmount = lateFee.getTotalAmount();
-
-        if (lateFee.getStatus() == LateFeeStatus.ACTIVE){
-
-            daysLate = Math.max(0,
-                    ChronoUnit.DAYS.between(
-                        lateFee.getRental().getExpectedReturnDate(),
-                        LocalDate.now()
-                    )
-            );
-
-            totalAmount = lateFee.getDailyAmount().multiply(
-                    BigDecimal.valueOf(daysLate)
-            );
-        }
+//        Long daysLate = lateFee.getDaysLate();
+//        BigDecimal totalAmount = lateFee.getTotalAmount();
+//
+//        if (lateFee.getStatus() == LateFeeStatus.ACTIVE) {
+//
+//            daysLate = Math.max(0,
+//                    ChronoUnit.DAYS.between(
+//                            lateFee.getRental().getExpectedReturnDate(),
+//                            LocalDate.now()
+//                    )
+//            );
+//
+//            totalAmount = lateFee.getDailyAmount().multiply(
+//                    BigDecimal.valueOf(daysLate)
+//            );
+//        }
 
         return new LateFeeResponse(
                 lateFee.getId(),
@@ -62,9 +62,9 @@ public class LateFeeService {
                 lateFee.getRental().getClient().getNames()
                         + " "
                         + lateFee.getRental().getClient().getLastNames(),
-                daysLate,
+                lateFee.getDaysLate(),
                 lateFee.getDailyAmount(),
-                totalAmount,
+                lateFee.getTotalAmount(),
                 lateFee.getStatus(),
                 lateFee.getPaymentDate(),
                 lateFee.getPaymentMethod(),
@@ -83,7 +83,7 @@ public class LateFeeService {
 
     public LateFeeResponse getLateFeeById(
             Long id
-    ){
+    ) {
         LateFee lateFee =
                 lateFeeRepository
                         .findById(id)
@@ -95,7 +95,7 @@ public class LateFeeService {
         return mapToResponse(lateFee);
     }
 
-    public List<LateFeeResponse> getActiveLateFees(){
+    public List<LateFeeResponse> getActiveLateFees() {
         List<LateFee> lateFees =
                 lateFeeRepository.findByStatus(
                         LateFeeStatus.ACTIVE
@@ -106,18 +106,18 @@ public class LateFeeService {
                 .toList();
     }
 
-    public List<LateFeeResponse> getPendingLateFees(){
+    public List<LateFeeResponse> getPendingLateFees() {
         List<LateFee> lateFees =
                 lateFeeRepository.findByStatus(
                         LateFeeStatus.PENDING
                 );
-        
+
         return lateFees.stream()
                 .map(this::mapToResponse)
                 .toList();
     }
 
-    public List<LateFeeResponse> getPaidLateFees(){
+    public List<LateFeeResponse> getPaidLateFees() {
 
         List<LateFee> lateFees =
                 lateFeeRepository.findByStatus(
@@ -129,9 +129,9 @@ public class LateFeeService {
                 .toList();
     }
 
-//    @Scheduled(cron = "0 0 0 * * *")
+    //    @Scheduled(cron = "0 0 0 * * *")
     @Scheduled(fixedRate = 60000)
-    public void generateLateFees(){
+    public void generateLateFees() {
 
         List<Rental> rentals =
                 rentalRepository.findByStatusAndExpectedReturnDateBefore(
@@ -139,86 +139,118 @@ public class LateFeeService {
                         LocalDate.now()
                 );
 
-        for (Rental rental: rentals){
-            if (lateFeeRepository.existsByRental(rental)
-            ) {
+        for (Rental rental : rentals) {
+//            if (lateFeeRepository.existsByRental(rental)
+//            ) {
+//                continue;
+//            }
+
+            LateFee lateFee = lateFeeRepository
+                    .findByRental(rental)
+                    .orElse(null);
+
+            long daysLate = Math.max(
+                    0,
+                    ChronoUnit.DAYS.between(
+                            rental.getExpectedReturnDate(),
+                            LocalDate.now()
+                    )
+            );
+
+            BigDecimal totalAmount =
+                    dailyLateFee.multiply(
+                            BigDecimal.valueOf(daysLate)
+                    );
+
+            if (lateFee == null) {
+
+
+                lateFee =
+                        LateFee.builder()
+//                                .rental(rental)
+//                                .dailyAmount(dailyLateFee)
+//                                .status(LateFeeStatus.ACTIVE)
+                                .rental(rental)
+                                .dailyAmount(dailyLateFee)
+                                .daysLate(daysLate)
+                                .totalAmount(totalAmount)
+                                .status(LateFeeStatus.ACTIVE)
+                                .build();
+            } else if (lateFee.getStatus() == LateFeeStatus.ACTIVE) {
+
+                lateFee.setDaysLate(daysLate);
+                lateFee.setTotalAmount(totalAmount);
+            } else {
                 continue;
             }
 
+                lateFeeRepository.save(lateFee);
+            }
+        }
+
+        public void finalizeLateFee (
+                Rental rental
+
+    ){
             LateFee lateFee =
-                    LateFee.builder()
-                            .rental(rental)
-                            .dailyAmount(dailyLateFee)
-                            .status(LateFeeStatus.ACTIVE)
-                            .build();
+                    lateFeeRepository.findByRental(rental)
+                            .orElse(null);
+
+            if (lateFee == null) {
+                return;
+            }
+
+            if (lateFee.getStatus() != LateFeeStatus.ACTIVE) {
+                return;
+            }
+
+            long daysLate = ChronoUnit.DAYS.between(
+                    rental.getExpectedReturnDate(),
+                    rental.getReturnedDate().toLocalDate()
+            );
+
+            if (daysLate <= 0) {
+                return;
+            }
+
+            BigDecimal totalAmount =
+                    dailyLateFee.multiply(
+                            BigDecimal.valueOf(daysLate)
+                    );
+
+            lateFee.setDaysLate(daysLate);
+            lateFee.setTotalAmount(totalAmount);
+            lateFee.setStatus(LateFeeStatus.PENDING);
 
             lateFeeRepository.save(lateFee);
         }
-    }
 
-    public void finalizeLateFee(
-            Rental  rental
-
+        public LateFeeResponse payLateFee (
+                Long id,
+                PayLateFeeRequest payLateFeeRequest
     ){
-        LateFee lateFee =
-                lateFeeRepository.findByRental(rental)
-                        .orElse(null);
+            LateFee lateFee =
+                    lateFeeRepository.findById(id)
+                            .orElseThrow(
+                                    () -> new ResourceNotFoundException(
+                                            "Multa no encontrada."
+                                    )
+                            );
 
-        if (lateFee == null) {
-            return;
-        }
 
-        if (lateFee.getStatus() != LateFeeStatus.ACTIVE){
-            return;
-        }
-
-        long daysLate = ChronoUnit.DAYS.between(
-                rental.getExpectedReturnDate(),
-                rental.getReturnedDate().toLocalDate()
-        );
-
-        if (daysLate <= 0){
-            return;
-        }
-
-        BigDecimal totalAmount =
-                dailyLateFee.multiply(
-                        BigDecimal.valueOf(daysLate)
+            if (lateFee.getStatus() != LateFeeStatus.PENDING) {
+                throw new BadRequestException(
+                        "Solo las multas en estado PENDING pueden registrarse como pagadas."
                 );
+            }
 
-        lateFee.setDaysLate(daysLate);
-        lateFee.setTotalAmount(totalAmount);
-        lateFee.setStatus(LateFeeStatus.PENDING);
+            lateFee.setStatus(LateFeeStatus.PAID);
+            lateFee.setPaymentDate(LocalDateTime.now());
+            lateFee.setPaymentMethod(payLateFeeRequest.paymentMethod());
+            lateFee.setObservations(payLateFeeRequest.observations());
 
-        lateFeeRepository.save(lateFee);
-    }
+            lateFeeRepository.save(lateFee);
 
-    public LateFeeResponse payLateFee(
-            Long id,
-            PayLateFeeRequest payLateFeeRequest
-    ){
-        LateFee lateFee =
-                lateFeeRepository.findById(id)
-                        .orElseThrow(
-                                () -> new ResourceNotFoundException(
-                                        "Multa no encontrada."
-                                )
-                        );
-
-
-        if (lateFee.getStatus() != LateFeeStatus.PENDING){
-            throw new BadRequestException(
-                    "Solo las multas en estado PENDING pueden registrarse como pagadas."
-            );
+            return mapToResponse(lateFee);
         }
-
-        lateFee.setStatus(LateFeeStatus.PAID);
-        lateFee.setPaymentDate(LocalDateTime.now());
-        lateFee.setPaymentMethod(payLateFeeRequest.paymentMethod());
-        lateFee.setObservations(payLateFeeRequest.observations());
-
-        lateFeeRepository.save(lateFee);
-
-        return mapToResponse(lateFee);
     }
-}

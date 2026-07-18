@@ -117,6 +117,13 @@ public class RankingReportRepositoryImpl
                             COUNT(lf.id),
                             SUM(
                                 CASE
+                                    WHEN lf.status = :activeStatus
+                                    THEN 1
+                                    ELSE 0
+                                END
+                            ),
+                            SUM(
+                                CASE
                                     WHEN lf.status= :pendingStatus
                                     THEN 1
                                     ELSE 0
@@ -140,14 +147,18 @@ public class RankingReportRepositoryImpl
                             p.lastNames
                         ORDER BY %s DESC
                         """,
-                        LATEFEE_RANKING_PROJECTION,
-                        sort.getExpression()
+                LATEFEE_RANKING_PROJECTION,
+                sort.getExpression()
         );
 
         return entityManager
                 .createQuery(
                         jpql,
                         LateFeeRankingProjection.class
+                )
+                .setParameter(
+                        "activeStatus",
+                        LateFeeStatus.ACTIVE
                 )
                 .setParameter(
                         "pendingStatus",
@@ -160,6 +171,4 @@ public class RankingReportRepositoryImpl
                 .setMaxResults(limit)
                 .getResultList();
     }
-
-
 }
