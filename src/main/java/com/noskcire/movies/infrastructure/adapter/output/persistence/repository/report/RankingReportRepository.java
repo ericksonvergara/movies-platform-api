@@ -1,8 +1,10 @@
 package com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report;
 
 import com.noskcire.movies.domain.enums.ClientRankingSort;
+import com.noskcire.movies.domain.enums.LateFeeRankingSort;
 import com.noskcire.movies.domain.enums.MovieRankingSort;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ClientRankingProjection;
+import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.LateFeeRankingProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.MovieRankingProjection;
 
 import java.util.List;
@@ -17,5 +19,10 @@ public interface RankingReportRepository {
     List<ClientRankingProjection> getClientRanking(
             Integer limit,
             ClientRankingSort sort
+    );
+
+    List<LateFeeRankingProjection> getLateFeeRanking(
+            Integer limit,
+            LateFeeRankingSort sort
     );
 }

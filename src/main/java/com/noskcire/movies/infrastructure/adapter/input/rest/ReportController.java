@@ -2,12 +2,14 @@ package com.noskcire.movies.infrastructure.adapter.input.rest;
 
 import com.noskcire.movies.application.dto.report.ClientRankingResult;
 import com.noskcire.movies.application.dto.report.DashboardResponse;
+import com.noskcire.movies.application.dto.report.LateFeeRankingResult;
 import com.noskcire.movies.application.dto.report.MovieRankingResult;
 import com.noskcire.movies.application.service.RankingReportService;
 import com.noskcire.movies.application.service.ReportService;
 import com.noskcire.movies.application.validation.ValidLimit;
 import com.noskcire.movies.domain.enums.ClientRankingSort;
 import com.noskcire.movies.domain.enums.MovieRankingSort;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -55,4 +57,13 @@ public class ReportController {
     ) {
         return rankingReportService.getClientRanking(limit, sort);
     }
+
+//    @GetMapping("/rankings/late-fees")
+//    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+//    public LateFeeRankingResult getLateFeeRanking(
+//            @RequestParam(defaultValue = "10")
+//            @ValidLimit
+//            Integer limit,
+//            @RequestParam
+//    )
 }

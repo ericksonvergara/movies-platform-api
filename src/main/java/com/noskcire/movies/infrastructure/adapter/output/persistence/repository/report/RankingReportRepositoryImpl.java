@@ -1,9 +1,11 @@
 package com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report;
 
 import com.noskcire.movies.domain.enums.ClientRankingSort;
+import com.noskcire.movies.domain.enums.LateFeeRankingSort;
 import com.noskcire.movies.domain.enums.MovieRankingSort;
 import com.noskcire.movies.domain.enums.RentalStatus;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ClientRankingProjection;
+import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.LateFeeRankingProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.MovieRankingProjection;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -105,4 +107,11 @@ public class RankingReportRepositoryImpl
                 .setMaxResults(limit)
                 .getResultList();
     }
+
+    @Override
+    public List<LateFeeRankingProjection> getLateFeeRanking(Integer limit, LateFeeRankingSort sort) {
+        return List.of();
+    }
+
+
 }
