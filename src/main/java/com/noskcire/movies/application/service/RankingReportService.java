@@ -5,10 +5,12 @@ import com.noskcire.movies.application.dto.report.*;
 import com.noskcire.movies.domain.enums.ClientRankingSort;
 import com.noskcire.movies.domain.enums.LateFeeRankingSort;
 import com.noskcire.movies.domain.enums.MovieRankingSort;
+import com.noskcire.movies.domain.enums.ReservationRankingSort;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.RankingReportRepository;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ClientRankingProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.LateFeeRankingProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.MovieRankingProjection;
+import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ReservationRankingProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -124,4 +126,42 @@ public class RankingReportService {
                 data
         );
     }
+
+    public ReservationRankingResult getReservationRanking(
+            Integer limit,
+            ReservationRankingSort sort
+    ){
+        if (limit == null || limit <= 0){
+            limit = 10;
+        }
+
+        List<ReservationRankingProjection> rankings =
+                rankingReportRepository.getReservationRanking(
+                        limit,
+                        sort
+                );
+
+        List<ReservationRankingResponse> data =
+                rankings.stream()
+                        .map(ranking -> new ReservationRankingResponse(
+                                ranking.clientId(),
+                                ranking.clientName(),
+                                ranking.totalReservations(),
+                                ranking.activeReservations(),
+                                ranking.notifiedReservations(),
+                                ranking.fulfilledReservations(),
+                                ranking.cancelledReservations(),
+                                ranking.expiredReservations())
+                        )
+                        .toList();
+
+        return new ReservationRankingResult(
+                limit,
+                sort,
+                data.size(),
+                data
+        );
+    }
+
+
 }

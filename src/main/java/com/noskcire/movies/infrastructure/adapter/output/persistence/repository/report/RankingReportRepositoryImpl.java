@@ -4,6 +4,7 @@ import com.noskcire.movies.domain.enums.*;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ClientRankingProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.LateFeeRankingProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.MovieRankingProjection;
+import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ReservationRankingProjection;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,9 @@ public class RankingReportRepositoryImpl
 
     private static final String LATEFEE_RANKING_PROJECTION =
             LateFeeRankingProjection.class.getCanonicalName();
+
+    private static final String RESERVATION_RANKING_PROJECTION =
+            ReservationRankingProjection.class.getCanonicalName();
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -167,6 +171,98 @@ public class RankingReportRepositoryImpl
                 .setParameter(
                         "paidStatus",
                         LateFeeStatus.PAID
+                )
+                .setMaxResults(limit)
+                .getResultList();
+    }
+
+    @Override
+    public List<ReservationRankingProjection> getReservationRanking(Integer limit, ReservationRankingSort sort) {
+        String jpql = String.format("""
+                SELECT NEW %s(
+                
+                    p.id,
+                
+                    CONCAT(p.names,' ',p.lastNames),
+                
+                    COUNT(r.id),
+                
+                    SUM(
+                        CASE
+                            WHEN r.status = :activeStatus
+                            THEN 1
+                            ELSE 0
+                        END
+                    ),
+                
+                    SUM(
+                        CASE
+                            WHEN r.status = :notifiedStatus
+                            THEN 1
+                            ELSE 0
+                        END
+                    ),
+                
+                    SUM(
+                        CASE
+                            WHEN r.status = :fulfilledStatus
+                            THEN 1
+                            ELSE 0
+                        END
+                    ),
+                
+                    SUM(
+                        CASE
+                            WHEN r.status = :cancelledStatus
+                            THEN 1
+                            ELSE 0
+                        END
+                    ),
+                
+                    SUM(
+                        CASE
+                            WHEN r.status = :expiredStatus
+                            THEN 1
+                            ELSE 0
+                        END
+                    )
+                
+                )
+                
+                FROM Reservation r
+                
+                JOIN r.client p
+                
+                GROUP BY
+                
+                    p.id,
+                    p.names,
+                    p.lastNames
+                
+                ORDER BY %s DESC
+                """,
+                RESERVATION_RANKING_PROJECTION,
+                sort.getExpression()
+        );
+        return entityManager
+                .createQuery(
+                        jpql,
+                        ReservationRankingProjection.class
+                )
+                .setParameter("activeStatus",
+                        ReservationStatus.ACTIVE
+                )
+                .setParameter("notifiedStatus",
+                        ReservationStatus.NOTIFIED
+                )
+                .setParameter("fulfilledStatus",
+                        ReservationStatus.FULFILLED
+                )
+                .setParameter("cancelledStatus",
+                        ReservationStatus.CANCELLED
+                )
+                .setParameter("expiredStatus",
+                        ReservationStatus.CANCELLED
                 )
                 .setMaxResults(limit)
                 .getResultList();

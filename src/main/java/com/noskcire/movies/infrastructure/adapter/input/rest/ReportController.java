@@ -1,17 +1,16 @@
 package com.noskcire.movies.infrastructure.adapter.input.rest;
 
-import com.noskcire.movies.application.dto.report.ClientRankingResult;
-import com.noskcire.movies.application.dto.report.DashboardResponse;
-import com.noskcire.movies.application.dto.report.LateFeeRankingResult;
-import com.noskcire.movies.application.dto.report.MovieRankingResult;
+import com.noskcire.movies.application.dto.report.*;
 import com.noskcire.movies.application.service.RankingReportService;
 import com.noskcire.movies.application.service.ReportService;
 import com.noskcire.movies.application.validation.ValidLimit;
 import com.noskcire.movies.domain.enums.ClientRankingSort;
 import com.noskcire.movies.domain.enums.LateFeeRankingSort;
 import com.noskcire.movies.domain.enums.MovieRankingSort;
+import com.noskcire.movies.domain.enums.ReservationRankingSort;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -74,5 +73,21 @@ public class ReportController {
                 limit,
                 sort
         );
+    }
+
+    @GetMapping("/rankings/reservations")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public ReservationRankingResult getReservationRanking(
+            @RequestParam(defaultValue = "10")
+            @ValidLimit
+            Integer limit,
+
+            @RequestParam(defaultValue = "COUNT")
+            ReservationRankingSort sort
+
+
+    ){
+
+        return rankingReportService.getReservationRanking(limit, sort);
     }
 }
