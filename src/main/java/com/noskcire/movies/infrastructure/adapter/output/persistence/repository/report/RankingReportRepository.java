@@ -27,11 +27,6 @@ public interface RankingReportRepository {
             ReservationRankingSort sort
     );
 
-    List<PeriodRankingProjection> getPeriodRanking(
-            Integer limit,
-            PeriodRankingSort sort
-    );
-
 //    List<MovieMostRankingProjection> getMovieMostRanking(
 //            Integer limit,
 //            MovieMostRankingSort sort

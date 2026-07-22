@@ -3,12 +3,14 @@ package com.noskcire.movies.application.service;
 import com.noskcire.movies.application.dto.report.*;
 
 import com.noskcire.movies.domain.enums.*;
+import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.AnalyticsReportRepository;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.RankingReportRepository;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -17,6 +19,7 @@ import java.util.List;
 public class RankingReportService {
 
     private final RankingReportRepository rankingReportRepository;
+    private final AnalyticsReportRepository analyticsReportRepository;
 
 
     public MovieRankingResult getMovieRanking(
@@ -157,33 +160,63 @@ public class RankingReportService {
         );
     }
 
-    public PeriodRankingResult getPeriodRanking(
-            Integer limit,
-            PeriodRankingSort sort
+    public IncomeByPeriodResponse getIncomeByPeriod(
+            LocalDate startDate,
+            LocalDate endDate
+
     ){
-        if (limit == null || limit <= 0){
-            limit = 10;
+        if (startDate.isAfter(endDate)){
+            throw new
+                    IllegalArgumentException(
+                            "La fecha inicial no puede ser mayor que la fecha final");
         }
 
-        List<PeriodRankingProjection> rankings =
-                rankingReportRepository.getPeriodRanking(
-                        limit,
-                        sort
+        IncomeByPeriodProjection report =
+                analyticsReportRepository.getIncomeByPeriod(
+                        startDate,
+                        endDate
                 );
 
-        List<PeriodRankingResponse> data =
-                rankings.stream()
-                        .map(ranking -> new PeriodRankingResponse(
-                                ranking.clientId(),
-                                ranking.clientName()
-                        ))
+        return new IncomeByPeriodResponse(
+                startDate,
+                endDate,
+                report.totalRentals(),
+                report.totalIncome(),
+                report.averageRentalAmount()
+        );
+    }
+
+    public RentalsByPeriodResult getRentalsByPeriod(
+            LocalDate startDate,
+            LocalDate endDate
+
+
+    ){
+        if (startDate.isAfter(endDate)){
+            throw new
+                    IllegalArgumentException(
+                            "La fecha inicial no puede ser mayor a la fecha final.");
+        }
+
+        List<RentalsByPeriodProjection> reports =
+                analyticsReportRepository.getRentalsByPeriod(
+                        startDate,
+                        endDate
+                );
+
+        List<RentalsByPeriodResponse> data =
+                reports.stream()
+                        .map(report -> new RentalsByPeriodResponse(
+                                report.rentalDate(),
+                                report.totalRentals())
+                        )
                         .toList();
 
-        return new PeriodRankingResult(
-                limit,
-                sort,
-                data.size(),
-                data
+        return new RentalsByPeriodResult(
+                startDate,
+                endDate,
+                totalRentals,
+                data.size()
         );
     }
 

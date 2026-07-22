@@ -265,11 +265,6 @@ public class RankingReportRepositoryImpl
                 .getResultList();
     }
 
-    @Override
-    public List<PeriodRankingProjection> getPeriodRanking(Integer limit, PeriodRankingSort sort) {
-        return List.of();
-    }
-
 //    @Override
 //    public List<MovieMostRankingProjection> getMovieMostRanking(Integer limit, MovieMostRankingSort sort) {
 //        return List.of();

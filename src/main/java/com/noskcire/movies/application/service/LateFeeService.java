@@ -129,8 +129,8 @@ public class LateFeeService {
                 .toList();
     }
 
-    //    @Scheduled(cron = "0 0 0 * * *")
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(cron = "0 0 0 * * *")
+    //@Scheduled(fixedRate = 60000)
     public void generateLateFees() {
 
         List<Rental> rentals =

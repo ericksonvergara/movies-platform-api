@@ -5,16 +5,15 @@ import com.noskcire.movies.application.service.RankingReportService;
 import com.noskcire.movies.application.service.ReportService;
 import com.noskcire.movies.application.validation.ValidLimit;
 import com.noskcire.movies.domain.enums.*;
-import jakarta.validation.Valid;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/reports")
@@ -89,29 +88,24 @@ public class ReportController {
         return rankingReportService.getReservationRanking(limit, sort);
     }
 
-    @GetMapping("/rankings/period")
+    @GetMapping("/rankings/income")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
-    public PeriodRankingResult getPeriodRanking(
-            @RequestParam(defaultValue = "10")
-            @ValidLimit
-            Integer limit,
+    public IncomeByPeriodResponse getIncomeByPeriod(
+            LocalDate startDate,
+            LocalDate endDate
 
-            @RequestParam(defaultValue = "COUNT")
-            PeriodRankingSort sort
     ){
-        return rankingReportService.getPeriodRanking(limit, sort);
+        return rankingReportService.getIncomeByPeriod(startDate, endDate);
     }
 
-//    @GetMapping("/rankings/movies-most")
-//    @PreAuthorize("hasnAnyRole('ADMIN', 'EMPLOYEE')")
-//    public MovieMostRankingResult getMovieMostRanking(
-//            @RequestParam(defaultValue = "10")
-//            @ValidLimit
-//            Integer limit,
-//
-//            @RequestParam(defaultValue = "COUNT")
-//            MovieMostRankingSort sort
-//    ){
-//        return rankingReportService.getMovieMostRanking(limit, sort);
-//    }
+    @GetMapping("/rentals")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public RentalsByPeriodResponse rentalsByPeriod(
+            LocalDate starDate,
+            LocalDate endDate
+    ){
+        return rankingReportService.getRentalsByPeriod(starDate, endDate);
+    }
+
+
 }
