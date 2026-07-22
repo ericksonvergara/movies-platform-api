@@ -1,13 +1,7 @@
 package com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report;
 
-import com.noskcire.movies.domain.enums.ClientRankingSort;
-import com.noskcire.movies.domain.enums.LateFeeRankingSort;
-import com.noskcire.movies.domain.enums.MovieRankingSort;
-import com.noskcire.movies.domain.enums.ReservationRankingSort;
-import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ClientRankingProjection;
-import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.LateFeeRankingProjection;
-import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.MovieRankingProjection;
-import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ReservationRankingProjection;
+import com.noskcire.movies.domain.enums.*;
+import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.*;
 
 import java.util.List;
 
@@ -32,4 +26,14 @@ public interface RankingReportRepository {
             Integer limit,
             ReservationRankingSort sort
     );
+
+    List<PeriodRankingProjection> getPeriodRanking(
+            Integer limit,
+            PeriodRankingSort sort
+    );
+
+//    List<MovieMostRankingProjection> getMovieMostRanking(
+//            Integer limit,
+//            MovieMostRankingSort sort
+//    );
 }

@@ -168,7 +168,7 @@ public class ReservationService {
                 ReservationStatus.ACTIVE
         )) {
             throw new BadRequestException(
-                    "El cliente ya tiene una reserva activa para esta pelicula."
+                    "El cliente ya tiene una reserva activa para esta película."
             );
         }
 
@@ -188,7 +188,7 @@ public class ReservationService {
                 RentalStatus.ACTIVE
         )) {
             throw new BadRequestException(
-                    "El cliente ya tiene esta pelicula alquilada."
+                    "El cliente ya tiene esta película alquilada."
             );
         }
 

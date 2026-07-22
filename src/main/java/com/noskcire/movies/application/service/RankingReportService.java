@@ -2,15 +2,9 @@ package com.noskcire.movies.application.service;
 
 import com.noskcire.movies.application.dto.report.*;
 
-import com.noskcire.movies.domain.enums.ClientRankingSort;
-import com.noskcire.movies.domain.enums.LateFeeRankingSort;
-import com.noskcire.movies.domain.enums.MovieRankingSort;
-import com.noskcire.movies.domain.enums.ReservationRankingSort;
+import com.noskcire.movies.domain.enums.*;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.RankingReportRepository;
-import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ClientRankingProjection;
-import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.LateFeeRankingProjection;
-import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.MovieRankingProjection;
-import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ReservationRankingProjection;
+import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -163,5 +157,45 @@ public class RankingReportService {
         );
     }
 
+    public PeriodRankingResult getPeriodRanking(
+            Integer limit,
+            PeriodRankingSort sort
+    ){
+        if (limit == null || limit <= 0){
+            limit = 10;
+        }
 
+        List<PeriodRankingProjection> rankings =
+                rankingReportRepository.getPeriodRanking(
+                        limit,
+                        sort
+                );
+
+        List<PeriodRankingResponse> data =
+                rankings.stream()
+                        .map(ranking -> new PeriodRankingResponse(
+                                ranking.clientId(),
+                                ranking.clientName()
+                        ))
+                        .toList();
+
+        return new PeriodRankingResult(
+                limit,
+                sort,
+                data.size(),
+                data
+        );
+    }
+
+//    public MovieMostRankingResult getMovieMostRanking(
+//            Integer limit,
+//            MovieMostRankingSort sort
+//    ){
+//        return new MovieMostRankingResult(
+//                limit,
+//                sort,
+//                data.size(),
+//                data
+//        );
+//    }
 }

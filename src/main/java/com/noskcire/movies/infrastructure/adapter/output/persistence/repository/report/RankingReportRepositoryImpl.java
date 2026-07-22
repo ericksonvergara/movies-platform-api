@@ -1,10 +1,7 @@
 package com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report;
 
 import com.noskcire.movies.domain.enums.*;
-import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ClientRankingProjection;
-import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.LateFeeRankingProjection;
-import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.MovieRankingProjection;
-import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ReservationRankingProjection;
+import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
@@ -267,4 +264,14 @@ public class RankingReportRepositoryImpl
                 .setMaxResults(limit)
                 .getResultList();
     }
+
+    @Override
+    public List<PeriodRankingProjection> getPeriodRanking(Integer limit, PeriodRankingSort sort) {
+        return List.of();
+    }
+
+//    @Override
+//    public List<MovieMostRankingProjection> getMovieMostRanking(Integer limit, MovieMostRankingSort sort) {
+//        return List.of();
+//    }
 }

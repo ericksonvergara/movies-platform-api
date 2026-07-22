@@ -99,7 +99,7 @@ public class RentalService {
                     .findById(detailRequest.movieId())
                     .orElseThrow(
                             () -> new ResourceNotFoundException(
-                                    "Pelicula no encontrada."
+                                    "Película no encontrada."
                             )
                     );
 
@@ -116,7 +116,7 @@ public class RentalService {
                     < detailRequest.quantity()
             ){
                 throw new BadRequestException(
-                        "No hay stock suficiente para la pelicula: "
+                        "No hay stock suficiente para la película: "
                                 + movie.getTitle()
                 );
             }

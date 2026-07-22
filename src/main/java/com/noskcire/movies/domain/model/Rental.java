@@ -13,7 +13,9 @@ import java.time.LocalDateTime;
 import java.util.Locale;
 
 @Entity
-@Table(name = "rentals", schema = "movies")
+@Table(name = "rentals"
+//        , schema = "movies"
+)
 @SQLDelete(sql = "UPDATE rentals SET deleted = true WHERE id = ?")
 @SQLRestriction("deleted = false")
 @Getter

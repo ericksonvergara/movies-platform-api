@@ -10,7 +10,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "late_fees", schema = "movies")
+@Table(name = "late_fees"
+//        , schema = "movies"
+)
 @Getter
 @Setter
 @NoArgsConstructor
