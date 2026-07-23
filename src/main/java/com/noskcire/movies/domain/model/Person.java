@@ -11,9 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "persons"
-//        , schema = "movies"
-)
+@Table(name = "persons", schema = "movies")
 @SQLDelete(sql = "UPDATE persons SET deleted = true WHERE id = ?")
 @SQLRestriction("deleted = false")
 @Getter

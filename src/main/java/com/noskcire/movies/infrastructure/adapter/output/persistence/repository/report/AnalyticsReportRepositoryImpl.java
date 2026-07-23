@@ -19,6 +19,9 @@ public class AnalyticsReportRepositoryImpl implements AnalyticsReportRepository 
     private static final String INCOME_BY_PERIOD_PROJECTION =
         IncomeByPeriodProjection.class.getCanonicalName();
 
+    private static final String RENTAL_BY_PERIOD_PROJECTION =
+            RentalsByPeriodProjection.class.getCanonicalName();
+
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -97,10 +100,49 @@ public IncomeByPeriodProjection getIncomeByPeriod(LocalDate startDate, LocalDate
     );
 }
 
-
-
     @Override
-    public List<RentalsByPeriodProjection> getRentalsByPeriod(LocalDate rentalDate, Long totalRentals) {
-        return List.of();
+    public List<RentalsByPeriodProjection> getRentalsByPeriod(LocalDate startDate, LocalDate endDate) {
+        String jpql = String.format("""
+                SELECT NEW %s(
+                r.rentalDate,
+                COUNT(r.id)
+                )
+                From Rental r
+                WHERE r.rentalDate BETWEEN :startDate AND :endDate
+                AND r.status IN (
+                    :activeStatus,
+                    :returnedStatus,
+                    :overdueStatus
+                )
+                GROUP BY
+                r.rentalDate
+                ORDER BY
+                r.rentalDate ASC
+                """,
+                RENTAL_BY_PERIOD_PROJECTION
+        );
+        return entityManager
+                .createQuery(
+                        jpql,
+                        RentalsByPeriodProjection.class
+                )
+                .setParameter("startDate",
+                        startDate
+                )
+                .setParameter("endDate",
+                        endDate
+                )
+                .setParameter("activeStatus",
+                        RentalStatus.ACTIVE
+                )
+                .setParameter("returnedStatus",
+                        RentalStatus.RETURNED
+                )
+                .setParameter("overdueStatus",
+                        RentalStatus.OVERDUE
+                )
+                .getResultList();
     }
 }
+
+

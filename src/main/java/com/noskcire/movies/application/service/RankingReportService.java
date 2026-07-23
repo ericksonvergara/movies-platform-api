@@ -19,8 +19,6 @@ import java.util.List;
 public class RankingReportService {
 
     private final RankingReportRepository rankingReportRepository;
-    private final AnalyticsReportRepository analyticsReportRepository;
-
 
     public MovieRankingResult getMovieRanking(
             Integer limit,
@@ -159,76 +157,4 @@ public class RankingReportService {
                 data
         );
     }
-
-    public IncomeByPeriodResponse getIncomeByPeriod(
-            LocalDate startDate,
-            LocalDate endDate
-
-    ){
-        if (startDate.isAfter(endDate)){
-            throw new
-                    IllegalArgumentException(
-                            "La fecha inicial no puede ser mayor que la fecha final");
-        }
-
-        IncomeByPeriodProjection report =
-                analyticsReportRepository.getIncomeByPeriod(
-                        startDate,
-                        endDate
-                );
-
-        return new IncomeByPeriodResponse(
-                startDate,
-                endDate,
-                report.totalRentals(),
-                report.totalIncome(),
-                report.averageRentalAmount()
-        );
-    }
-
-    public RentalsByPeriodResult getRentalsByPeriod(
-            LocalDate startDate,
-            LocalDate endDate
-
-
-    ){
-        if (startDate.isAfter(endDate)){
-            throw new
-                    IllegalArgumentException(
-                            "La fecha inicial no puede ser mayor a la fecha final.");
-        }
-
-        List<RentalsByPeriodProjection> reports =
-                analyticsReportRepository.getRentalsByPeriod(
-                        startDate,
-                        endDate
-                );
-
-        List<RentalsByPeriodResponse> data =
-                reports.stream()
-                        .map(report -> new RentalsByPeriodResponse(
-                                report.rentalDate(),
-                                report.totalRentals())
-                        )
-                        .toList();
-
-        return new RentalsByPeriodResult(
-                startDate,
-                endDate,
-                totalRentals,
-                data.size()
-        );
-    }
-
-//    public MovieMostRankingResult getMovieMostRanking(
-//            Integer limit,
-//            MovieMostRankingSort sort
-//    ){
-//        return new MovieMostRankingResult(
-//                limit,
-//                sort,
-//                data.size(),
-//                data
-//        );
-//    }
 }

@@ -6,7 +6,7 @@ import java.util.List;
 public record RentalsByPeriodResult(
         LocalDate startDate,
         LocalDate endDate,
-        Integer totalRentals,
+        Integer totalDays,
         List<RentalsByPeriodResponse> data
 ) {
 }

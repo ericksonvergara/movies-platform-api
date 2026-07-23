@@ -1,11 +1,13 @@
 package com.noskcire.movies.infrastructure.adapter.input.rest;
 
 import com.noskcire.movies.application.dto.report.*;
+import com.noskcire.movies.application.service.AnalyticsReportService;
 import com.noskcire.movies.application.service.RankingReportService;
 import com.noskcire.movies.application.service.ReportService;
 import com.noskcire.movies.application.validation.ValidLimit;
 import com.noskcire.movies.domain.enums.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +25,7 @@ public class ReportController {
 
     private final ReportService reportService;
     private final RankingReportService rankingReportService;
+    private final AnalyticsReportService analyticsReportService;
 
     @GetMapping("/dashboard")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
@@ -95,16 +98,24 @@ public class ReportController {
             LocalDate endDate
 
     ){
-        return rankingReportService.getIncomeByPeriod(startDate, endDate);
+        return analyticsReportService.getIncomeByPeriod(startDate, endDate);
     }
 
     @GetMapping("/rentals")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
-    public RentalsByPeriodResponse rentalsByPeriod(
-            LocalDate starDate,
+    public RentalsByPeriodResult rentalsByPeriod(
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate startDate,
+
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate endDate
     ){
-        return rankingReportService.getRentalsByPeriod(starDate, endDate);
+        return analyticsReportService.getRentalsByPeriod(
+                startDate,
+                endDate
+        );
     }
 
 
