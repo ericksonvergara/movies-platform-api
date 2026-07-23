@@ -1,7 +1,9 @@
 package com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report;
 
+import com.noskcire.movies.domain.enums.MovieProfitabilitySort;
 import com.noskcire.movies.domain.enums.RentalStatus;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.IncomeByPeriodProjection;
+import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ProfitableMovieProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.RentalsByPeriodProjection;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -21,6 +23,9 @@ public class AnalyticsReportRepositoryImpl implements AnalyticsReportRepository 
 
     private static final String RENTAL_BY_PERIOD_PROJECTION =
             RentalsByPeriodProjection.class.getCanonicalName();
+
+    private static final String PROFITABLE_MOVIE_PROJECTION =
+            ProfitableMovieProjection.class.getCanonicalName();
 
 
     @PersistenceContext
@@ -142,6 +147,86 @@ public IncomeByPeriodProjection getIncomeByPeriod(LocalDate startDate, LocalDate
                         RentalStatus.OVERDUE
                 )
                 .getResultList();
+    }
+
+    @Override
+    public List<ProfitableMovieProjection> getMostProfitableMovies(Integer limit, MovieProfitabilitySort sortBy) {
+        String jpql = String.format("""
+            SELECT NEW %s(
+
+                m.id,
+
+                m.title,
+
+                SUM(rd.quantity),
+
+                SUM(rd.rentalPrice * rd.quantity)
+
+            )
+            FROM RentalDetail rd
+
+            JOIN rd.movie m
+
+            JOIN rd.rental r
+
+            WHERE r.status IN (
+
+                :activeStatus,
+
+                :returnedStatus,
+
+                :overdueStatus
+
+            )
+
+            GROUP BY
+
+                m.id,
+
+                m.title
+
+            ORDER BY
+
+                %s DESC
+            """,
+                PROFITABLE_MOVIE_PROJECTION,
+                resolveSort(sortBy)
+        );
+
+        return entityManager
+                .createQuery(
+                        jpql,
+                        ProfitableMovieProjection.class
+                )
+                .setParameter(
+                        "activeStatus",
+                        RentalStatus.ACTIVE
+                )
+                .setParameter(
+                        "returnedStatus",
+                        RentalStatus.RETURNED
+                )
+                .setParameter(
+                        "overdueStatus",
+                        RentalStatus.OVERDUE
+                )
+                .setMaxResults(limit)
+                .getResultList();
+    }
+
+    private String resolveSort(MovieProfitabilitySort sortBy) {
+
+        return switch (sortBy) {
+
+            case TOTAL_INCOME ->
+                    "SUM(rd.rentalPrice * rd.quantity)";
+
+            case TOTAL_RENTALS ->
+                    "SUM(rd.quantity)";
+
+            case AVERAGE_INCOME ->
+                    "AVG(rd.rentalPrice * rd.quantity)";
+        };
     }
 }
 

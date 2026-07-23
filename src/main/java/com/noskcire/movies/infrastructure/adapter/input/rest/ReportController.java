@@ -118,5 +118,17 @@ public class ReportController {
         );
     }
 
+    @GetMapping("/movies/profitability")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public ProfitableMovieResult getProfitableMovie(
+            @RequestParam(defaultValue = "10")
+            Integer limit,
+            
+            @RequestParam(defaultValue = "TOTAL_INCOME")
+            MovieProfitabilitySort sortBy
+    ){
+        return analyticsReportService.getProfitableMovie(limit, sortBy);
+    }
+
 
 }

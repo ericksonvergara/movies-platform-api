@@ -1,6 +1,8 @@
 package com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report;
 
+import com.noskcire.movies.domain.enums.MovieProfitabilitySort;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.IncomeByPeriodProjection;
+import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ProfitableMovieProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.RentalsByPeriodProjection;
 
 import java.time.LocalDate;
@@ -15,5 +17,10 @@ public interface AnalyticsReportRepository {
     List<RentalsByPeriodProjection> getRentalsByPeriod(
             LocalDate startDate,
             LocalDate endDate
+    );
+
+    List<ProfitableMovieProjection> getMostProfitableMovies(
+            Integer limit,
+            MovieProfitabilitySort sortBy
     );
 }

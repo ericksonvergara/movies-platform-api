@@ -1,15 +1,17 @@
 package com.noskcire.movies.application.service;
 
-import com.noskcire.movies.application.dto.report.IncomeByPeriodResponse;
-import com.noskcire.movies.application.dto.report.RentalsByPeriodResponse;
-import com.noskcire.movies.application.dto.report.RentalsByPeriodResult;
+import com.noskcire.movies.application.dto.report.*;
+import com.noskcire.movies.domain.enums.MovieProfitabilitySort;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.AnalyticsReportRepository;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.IncomeByPeriodProjection;
+import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ProfitableMovieProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.RentalsByPeriodProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -75,6 +77,42 @@ public class AnalyticsReportService {
         return new RentalsByPeriodResult(
                 startDate,
                 endDate,
+                data.size(),
+                data
+        );
+    }
+
+    public ProfitableMovieResult getProfitableMovie(
+            Integer limit,
+            MovieProfitabilitySort sortBy
+    ){
+        if (limit == null || limit <= 0) {
+            limit = 10;
+        }
+
+        if (sortBy == null) {
+            sortBy = MovieProfitabilitySort.TOTAL_INCOME;
+        }
+
+        List<ProfitableMovieProjection> reports =
+                analyticsReportRepository.getMostProfitableMovies(
+                        limit,
+                        sortBy
+                );
+
+        List<ProfitableMovieResponse> data =
+                reports.stream()
+                        .map(report -> new ProfitableMovieResponse(
+                                report.movieId(),
+                                report.title(),
+                                report.totalUnits(),
+                                report.totalIncome()
+                        ))
+                        .toList();
+
+        return new ProfitableMovieResult(
+                limit,
+                sortBy,
                 data.size(),
                 data
         );
