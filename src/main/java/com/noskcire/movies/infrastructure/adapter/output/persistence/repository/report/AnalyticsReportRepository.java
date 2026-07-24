@@ -1,9 +1,11 @@
 package com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report;
 
+import com.noskcire.movies.application.dto.report.StatisticsResponse;
 import com.noskcire.movies.domain.enums.MovieProfitabilitySort;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.IncomeByPeriodProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ProfitableMovieProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.RentalsByPeriodProjection;
+import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.StatisticsProjection;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,4 +25,6 @@ public interface AnalyticsReportRepository {
             Integer limit,
             MovieProfitabilitySort sortBy
     );
+
+    StatisticsProjection getStatistics();
 }

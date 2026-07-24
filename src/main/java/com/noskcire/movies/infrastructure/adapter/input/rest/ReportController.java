@@ -84,8 +84,6 @@ public class ReportController {
 
             @RequestParam(defaultValue = "COUNT")
             ReservationRankingSort sort
-
-
     ){
 
         return rankingReportService.getReservationRanking(limit, sort);
@@ -130,5 +128,9 @@ public class ReportController {
         return analyticsReportService.getProfitableMovie(limit, sortBy);
     }
 
-
+    @GetMapping("/statistics")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public StatisticsResponse getStatistics(){
+        return analyticsReportService.getStatistics();
+    }
 }

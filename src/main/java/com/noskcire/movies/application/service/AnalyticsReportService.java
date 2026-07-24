@@ -6,12 +6,11 @@ import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.IncomeByPeriodProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ProfitableMovieProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.RentalsByPeriodProjection;
+import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.StatisticsProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -115,6 +114,22 @@ public class AnalyticsReportService {
                 sortBy,
                 data.size(),
                 data
+        );
+    }
+
+    public StatisticsResponse getStatistics(){
+
+        StatisticsProjection statics =
+                analyticsReportRepository.getStatistics();
+
+        return new StatisticsResponse(
+                statics.totalIncome(),
+                statics.totalRentals(),
+                statics.totalReservations(),
+                statics.totalLateFees(),
+                statics.totalPersons(),
+                statics.mostRentedMovie(),
+                statics.topPerson()
         );
     }
 }
