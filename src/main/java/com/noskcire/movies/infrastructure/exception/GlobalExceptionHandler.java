@@ -2,6 +2,7 @@ package com.noskcire.movies.infrastructure.exception;
 
 import com.noskcire.movies.application.dto.response.ErrorResponse;
 import com.noskcire.movies.domain.exception.BadRequestException;
+import com.noskcire.movies.domain.exception.ReportExportException;
 import com.noskcire.movies.domain.exception.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,4 +141,23 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
         );
     }
+
+    @ExceptionHandler(ReportExportException.class)
+    public ResponseEntity<ErrorResponse> handleReportExportException(
+            ReportExportException ex
+    ){
+        ErrorResponse errorResponse =
+                new ErrorResponse(
+                   false,
+                   "Ocurrio un error",
+                   null,
+                   LocalDateTime.now()
+                );
+
+    return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR).
+            body(errorResponse);
+
+    }
+
 }

@@ -35,12 +35,24 @@ public class ReportController {
     private final AnalyticsReportService analyticsReportService;
     private final ReportExportService reportExportService;
 
+    @Operation(summary = "Obtener dashboard", description = "Devuelve un resumen con indicadores clave del sistema")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Dashboard obtenido correctamente"),
+            @ApiResponse(responseCode = "401", description = "No autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
     @GetMapping("/dashboard")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public DashboardResponse dashboard() {
         return reportService.dashboard();
     }
 
+    @Operation(summary = "Ranking de películas", description = "Obtiene el ranking de películas más alquiladas o mejor valoradas")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Ranking obtenido correctamente"),
+            @ApiResponse(responseCode = "401", description = "No autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
     @GetMapping("/rankings/movies")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public MovieRankingResult getMovieRanking(
@@ -54,6 +66,12 @@ public class ReportController {
         return rankingReportService.getMovieRanking(limit, sort);
     }
 
+    @Operation(summary = "Ranking de clientes", description = "Obtiene el ranking de clientes con más alquileres o multas")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Ranking obtenido correctamente"),
+            @ApiResponse(responseCode = "401", description = "No autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
     @GetMapping("/rankings/clients")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ClientRankingResult getClientRanking(
@@ -66,6 +84,12 @@ public class ReportController {
         return rankingReportService.getClientRanking(limit, sort);
     }
 
+    @Operation(summary = "Ranking de multas", description = "Obtiene el ranking de multas más frecuentes o de mayor monto")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Ranking obtenido correctamente"),
+            @ApiResponse(responseCode = "401", description = "No autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
     @GetMapping("/rankings/late-fees")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public LateFeeRankingResult getLateFeeRanking(
@@ -83,6 +107,12 @@ public class ReportController {
         );
     }
 
+    @Operation(summary = "Ranking de reservas", description = "Obtiene el ranking de películas y clientes con más reservas")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Ranking obtenido correctamente"),
+            @ApiResponse(responseCode = "401", description = "No autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
     @GetMapping("/rankings/reservations")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ReservationRankingResult getReservationRanking(
@@ -97,6 +127,13 @@ public class ReportController {
         return rankingReportService.getReservationRanking(limit, sort);
     }
 
+    @Operation(summary = "Ingresos por período", description = "Obtiene el resumen de ingresos generados en un rango de fechas")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Ingresos obtenidos correctamente"),
+            @ApiResponse(responseCode = "400", description = "Rango de fechas inválido"),
+            @ApiResponse(responseCode = "401", description = "No autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
     @GetMapping("/rankings/income")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public IncomeByPeriodResponse getIncomeByPeriod(
@@ -107,6 +144,13 @@ public class ReportController {
         return analyticsReportService.getIncomeByPeriod(startDate, endDate);
     }
 
+    @Operation(summary = "Alquileres por período", description = "Obtiene el resumen de alquileres realizados en un rango de fechas")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Alquileres obtenidos correctamente"),
+            @ApiResponse(responseCode = "400", description = "Rango de fechas inválido"),
+            @ApiResponse(responseCode = "401", description = "No autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
     @GetMapping("/rentals")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public RentalsByPeriodResult rentalsByPeriod(
@@ -124,6 +168,12 @@ public class ReportController {
         );
     }
 
+    @Operation(summary = "Películas más rentables", description = "Obtiene el ranking de películas más rentables según los ingresos generados")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Ranking obtenido correctamente"),
+            @ApiResponse(responseCode = "401", description = "No autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
     @GetMapping("/movies/profitability")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ProfitableMovieResult getProfitableMovie(
@@ -136,6 +186,12 @@ public class ReportController {
         return analyticsReportService.getProfitableMovie(limit, sortBy);
     }
 
+    @Operation(summary = "Estadísticas generales", description = "Obtiene estadísticas generales del sistema como totales y promedios")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Estadísticas obtenidas correctamente"),
+            @ApiResponse(responseCode = "401", description = "No autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
     @GetMapping("/statistics")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public StatisticsResponse getStatistics(){
@@ -166,6 +222,12 @@ public class ReportController {
         return analyticsReportService.getRentalTrends(startDate, endDate);
     }
 
+    @Operation(summary = "Exportar ranking de películas", description = "Exporta a Excel el ranking de películas más alquiladas")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Archivo Excel generado correctamente"),
+            @ApiResponse(responseCode = "401", description = "No autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
     @GetMapping("/export/movies")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<byte[]> exportMovieRanking(
@@ -175,6 +237,12 @@ public class ReportController {
         return buildExcelResponse(excel, "ranking_peliculas.xlsx");
     }
 
+    @Operation(summary = "Exportar ranking de clientes", description = "Exporta a Excel el ranking de clientes con más actividad")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Archivo Excel generado correctamente"),
+            @ApiResponse(responseCode = "401", description = "No autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
     @GetMapping("/export/customers")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<byte[]> exportClientRanking(
@@ -184,6 +252,12 @@ public class ReportController {
         return buildExcelResponse(excel, "ranking_clientes.xlsx");
     }
 
+    @Operation(summary = "Exportar ranking de multas", description = "Exporta a Excel el ranking de multas por cliente")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Archivo Excel generado correctamente"),
+            @ApiResponse(responseCode = "401", description = "No autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
     @GetMapping("/export/late-fees")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<byte[]> exportLateFeeRanking(
@@ -193,6 +267,12 @@ public class ReportController {
         return buildExcelResponse(excel, "ranking_multas.xlsx");
     }
 
+    @Operation(summary = "Exportar ranking de reservas", description = "Exporta a Excel el ranking de reservas por película o cliente")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Archivo Excel generado correctamente"),
+            @ApiResponse(responseCode = "401", description = "No autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
     @GetMapping("/export/reservations")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<byte[]> exportReservationRanking(
@@ -202,6 +282,13 @@ public class ReportController {
         return buildExcelResponse(excel, "ranking_reservas.xlsx");
     }
 
+    @Operation(summary = "Exportar ingresos por período", description = "Exporta a Excel el resumen de ingresos en un rango de fechas")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Archivo Excel generado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Rango de fechas inválido"),
+            @ApiResponse(responseCode = "401", description = "No autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
     @GetMapping("/export/income")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<byte[]> exportIncomeByPeriod(
@@ -212,6 +299,13 @@ public class ReportController {
         return buildExcelResponse(excel, "ingresos_periodo.xlsx");
     }
 
+    @Operation(summary = "Exportar alquileres por período", description = "Exporta a Excel el resumen de alquileres en un rango de fechas")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Archivo Excel generado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Rango de fechas inválido"),
+            @ApiResponse(responseCode = "401", description = "No autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
     @GetMapping("/export/rentals")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<byte[]> exportRentalsByPeriod(
@@ -222,6 +316,12 @@ public class ReportController {
         return buildExcelResponse(excel, "alquileres_periodo.xlsx");
     }
 
+    @Operation(summary = "Exportar películas más rentables", description = "Exporta a Excel el ranking de películas más rentables")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Archivo Excel generado correctamente"),
+            @ApiResponse(responseCode = "401", description = "No autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
     @GetMapping("/export/profitable-movies")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<byte[]> exportProfitableMovies(
@@ -233,6 +333,12 @@ public class ReportController {
         return buildExcelResponse(excel, "peliculas_rentables.xlsx");
     }
 
+    @Operation(summary = "Exportar estadísticas generales", description = "Exporta a Excel las estadísticas generales del sistema")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Archivo Excel generado correctamente"),
+            @ApiResponse(responseCode = "401", description = "No autenticado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
     @GetMapping("/export/statistics")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<byte[]> exportStatistics() {
