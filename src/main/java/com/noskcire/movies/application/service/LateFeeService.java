@@ -38,23 +38,6 @@ public class LateFeeService {
             LateFee lateFee
     ) {
 
-//        Long daysLate = lateFee.getDaysLate();
-//        BigDecimal totalAmount = lateFee.getTotalAmount();
-//
-//        if (lateFee.getStatus() == LateFeeStatus.ACTIVE) {
-//
-//            daysLate = Math.max(0,
-//                    ChronoUnit.DAYS.between(
-//                            lateFee.getRental().getExpectedReturnDate(),
-//                            LocalDate.now()
-//                    )
-//            );
-//
-//            totalAmount = lateFee.getDailyAmount().multiply(
-//                    BigDecimal.valueOf(daysLate)
-//            );
-//        }
-
         return new LateFeeResponse(
                 lateFee.getId(),
                 lateFee.getRental().getId(),
@@ -130,7 +113,6 @@ public class LateFeeService {
     }
 
     @Scheduled(cron = "0 0 0 * * *")
-    //@Scheduled(fixedRate = 60000)
     public void generateLateFees() {
 
         List<Rental> rentals =
@@ -140,11 +122,6 @@ public class LateFeeService {
                 );
 
         for (Rental rental : rentals) {
-//            if (lateFeeRepository.existsByRental(rental)
-//            ) {
-//                continue;
-//            }
-
             LateFee lateFee = lateFeeRepository
                     .findByRental(rental)
                     .orElse(null);
@@ -167,9 +144,6 @@ public class LateFeeService {
 
                 lateFee =
                         LateFee.builder()
-//                                .rental(rental)
-//                                .dailyAmount(dailyLateFee)
-//                                .status(LateFeeStatus.ACTIVE)
                                 .rental(rental)
                                 .dailyAmount(dailyLateFee)
                                 .daysLate(daysLate)

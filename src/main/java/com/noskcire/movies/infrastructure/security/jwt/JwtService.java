@@ -1,6 +1,5 @@
 package com.noskcire.movies.infrastructure.security.jwt;
 
-import com.noskcire.movies.domain.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -110,14 +109,12 @@ public class JwtService {
     public boolean IsTokenValid(
             String token,
             UserDetails userDetails
-//            User user
     ) {
         final String username =
                 extractUsername(token);
 
         return (username.equals(
                 userDetails.getUsername()
-//                user.getUsername()
         ) &&
                 !isTokenExpired(token)
         );

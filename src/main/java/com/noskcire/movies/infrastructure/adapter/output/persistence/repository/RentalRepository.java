@@ -24,8 +24,6 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
             LocalDate date
     );
 
-    List<Rental> findByEmployeeId(Long employeeId);
-
     @Query("""
                 SELECT EXISTS (
                     SELECT rd

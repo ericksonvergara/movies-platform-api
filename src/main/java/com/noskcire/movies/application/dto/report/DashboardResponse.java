@@ -1,7 +1,5 @@
 package com.noskcire.movies.application.dto.report;
 
-import com.noskcire.movies.domain.model.Movie;
-
 public record DashboardResponse(
 
         MovieDashboardResponse movies,

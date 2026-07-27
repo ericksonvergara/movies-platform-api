@@ -1,9 +1,9 @@
 package com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report;
 
-import com.noskcire.movies.application.dto.report.StatisticsResponse;
 import com.noskcire.movies.domain.enums.MovieProfitabilitySort;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.IncomeByPeriodProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ProfitableMovieProjection;
+import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.RentalTrendProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.RentalsByPeriodProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.StatisticsProjection;
 
@@ -17,6 +17,11 @@ public interface AnalyticsReportRepository {
     );
 
     List<RentalsByPeriodProjection> getRentalsByPeriod(
+            LocalDate startDate,
+            LocalDate endDate
+    );
+
+    List<RentalTrendProjection> getRentalTrends(
             LocalDate startDate,
             LocalDate endDate
     );

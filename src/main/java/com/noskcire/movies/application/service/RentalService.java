@@ -306,7 +306,6 @@ public class RentalService {
         rental.setReturnedDate(LocalDateTime.now());
         rental.setStatus(RentalStatus.RETURNED);
         rentalRepository.save(rental);
-//        lateFeeService.generateLateFee(rental);
         lateFeeService.finalizeLateFee(rental);
         return mapToResponse(rental);
     }

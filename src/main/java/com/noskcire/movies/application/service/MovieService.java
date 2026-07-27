@@ -7,7 +7,6 @@ import com.noskcire.movies.domain.exception.ResourceNotFoundException;
 import com.noskcire.movies.domain.model.Movie;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.MovieRepository;
 import com.noskcire.movies.infrastructure.specification.GenericSpecification;
-import com.noskcire.movies.infrastructure.specification.MovieSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

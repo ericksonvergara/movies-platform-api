@@ -2,8 +2,6 @@ package com.noskcire.movies.infrastructure.adapter.output.persistence.repository
 
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.RevenueSummary;
 
-import java.math.BigDecimal;
-
 public interface DashboardReportRepository {
 
     // Movies

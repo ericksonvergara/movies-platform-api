@@ -2,8 +2,6 @@ package com.noskcire.movies.application.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 
 import java.lang.annotation.*;
 

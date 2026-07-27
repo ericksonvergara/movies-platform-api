@@ -4,7 +4,6 @@ import com.noskcire.movies.domain.enums.LateFeeStatus;
 import com.noskcire.movies.domain.enums.PersonType;
 import com.noskcire.movies.domain.enums.RentalStatus;
 import com.noskcire.movies.domain.enums.ReservationStatus;
-import com.noskcire.movies.domain.model.LateFee;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.RevenueSummary;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

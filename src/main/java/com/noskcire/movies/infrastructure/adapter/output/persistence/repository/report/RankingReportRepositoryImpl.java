@@ -264,9 +264,4 @@ public class RankingReportRepositoryImpl
                 .setMaxResults(limit)
                 .getResultList();
     }
-
-//    @Override
-//    public List<MovieMostRankingProjection> getMovieMostRanking(Integer limit, MovieMostRankingSort sort) {
-//        return List.of();
-//    }
 }

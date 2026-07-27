@@ -12,9 +12,7 @@ import com.noskcire.movies.domain.model.User;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.PersonRepository;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.RoleRepository;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.UserRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 

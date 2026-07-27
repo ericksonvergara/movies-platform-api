@@ -3,6 +3,8 @@ package com.noskcire.movies.infrastructure.exception;
 import com.noskcire.movies.application.dto.response.ErrorResponse;
 import com.noskcire.movies.domain.exception.BadRequestException;
 import com.noskcire.movies.domain.exception.ResourceNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -13,24 +15,32 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.nio.file.AccessDeniedException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private final Logger log =
+            LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(BadRequestException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleBadRequest(
+    //@ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorResponse> handleBadRequest(
             BadRequestException ex
     ) {
-        return new ErrorResponse(
+
+        log.warn("Solicitud inválida: {}", ex.getMessage());
+        
+        ErrorResponse error = new ErrorResponse(
                 false,
                 ex.getMessage(),
                 null,
                 LocalDateTime.now()
         );
+
+        return ResponseEntity
+                .badRequest()
+                .body(error);
     }
 
     @ExceptionHandler(BadCredentialsException.class)

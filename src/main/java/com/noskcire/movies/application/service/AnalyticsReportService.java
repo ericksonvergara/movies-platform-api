@@ -2,9 +2,11 @@ package com.noskcire.movies.application.service;
 
 import com.noskcire.movies.application.dto.report.*;
 import com.noskcire.movies.domain.enums.MovieProfitabilitySort;
+import com.noskcire.movies.domain.exception.BadRequestException;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.AnalyticsReportRepository;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.IncomeByPeriodProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ProfitableMovieProjection;
+import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.RentalTrendProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.RentalsByPeriodProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.StatisticsProjection;
 import lombok.RequiredArgsConstructor;
@@ -74,6 +76,37 @@ public class AnalyticsReportService {
                         .toList();
 
         return new RentalsByPeriodResult(
+                startDate,
+                endDate,
+                data.size(),
+                data
+        );
+    }
+
+    public RentalTrendResult getRentalTrends(
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
+        if (startDate.isAfter(endDate)) {
+            throw new BadRequestException(
+                    "La fecha inicial no puede ser mayor a la fecha final."
+            );
+        }
+
+        List<RentalTrendProjection> reports =
+                analyticsReportRepository.getRentalTrends(startDate, endDate);
+
+        List<RentalTrendResponse> data =
+                reports.stream()
+                        .map(report -> new RentalTrendResponse(
+                                report.year(),
+                                report.month(),
+                                report.totalRentals(),
+                                report.totalIncome()
+                        ))
+                        .toList();
+
+        return new RentalTrendResult(
                 startDate,
                 endDate,
                 data.size(),

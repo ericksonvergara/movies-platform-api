@@ -34,8 +34,6 @@ public class ReservationService {
     private final UserRepository userRepository;
     private final RentalRepository rentalRepository;
 
-    //return mapToResponse(Reservation);
-
     private ReservationResponse mapToResponse(
             Reservation reservation
     ) {
@@ -356,14 +354,6 @@ public class ReservationService {
                                 ReservationStatus.ACTIVE
                         )
                         .orElse(null);
-
-        System.out.println(
-                reservationRepository
-                        .findFirstByMovieAndStatusOrderByReservationDateAsc(
-                                movie,
-                                ReservationStatus.ACTIVE
-                        )
-        );
 
         if (reservation == null) {
             return;

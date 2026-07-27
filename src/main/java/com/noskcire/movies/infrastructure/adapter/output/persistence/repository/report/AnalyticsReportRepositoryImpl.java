@@ -4,6 +4,7 @@ import com.noskcire.movies.domain.enums.MovieProfitabilitySort;
 import com.noskcire.movies.domain.enums.RentalStatus;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.IncomeByPeriodProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.ProfitableMovieProjection;
+import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.RentalTrendProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.RentalsByPeriodProjection;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.StatisticsProjection;
 import jakarta.persistence.EntityManager;
@@ -27,6 +28,9 @@ public class AnalyticsReportRepositoryImpl implements AnalyticsReportRepository 
 
     private static final String PROFITABLE_MOVIE_PROJECTION =
             ProfitableMovieProjection.class.getCanonicalName();
+
+    private static final String RENTAL_TREND_PROJECTION =
+            RentalTrendProjection.class.getCanonicalName();
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -106,6 +110,37 @@ public class AnalyticsReportRepositoryImpl implements AnalyticsReportRepository 
                 .setParameter("overdueStatus",
                         RentalStatus.OVERDUE
                 )
+                .getResultList();
+    }
+
+    @Override
+    public List<RentalTrendProjection> getRentalTrends(LocalDate startDate, LocalDate endDate) {
+        String jpql = String.format("""
+                        SELECT NEW %s(
+                        YEAR(r.rentalDate),
+                        MONTH(r.rentalDate),
+                        COUNT(r.id),
+                        COALESCE(SUM(r.total), 0)
+                        )
+                        FROM Rental r
+                        WHERE r.rentalDate BETWEEN :startDate AND :endDate
+                        AND r.status IN (
+                            :activeStatus,
+                            :returnedStatus,
+                            :overdueStatus
+                        )
+                        GROUP BY YEAR(r.rentalDate), MONTH(r.rentalDate)
+                        ORDER BY YEAR(r.rentalDate) ASC, MONTH(r.rentalDate) ASC
+                        """,
+                RENTAL_TREND_PROJECTION
+        );
+        return entityManager
+                .createQuery(jpql, RentalTrendProjection.class)
+                .setParameter("startDate", startDate)
+                .setParameter("endDate", endDate)
+                .setParameter("activeStatus", RentalStatus.ACTIVE)
+                .setParameter("returnedStatus", RentalStatus.RETURNED)
+                .setParameter("overdueStatus", RentalStatus.OVERDUE)
                 .getResultList();
     }
 

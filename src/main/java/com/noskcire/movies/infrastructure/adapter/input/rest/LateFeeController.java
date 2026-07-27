@@ -5,7 +5,6 @@ import com.noskcire.movies.application.dto.lateFee.PayLateFeeRequest;
 import com.noskcire.movies.application.service.LateFeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 

@@ -2,10 +2,10 @@ package com.noskcire.movies.application.dto.report;
 
 import java.math.BigDecimal;
 
-public record ProfitableMovieResponse(
-        Long movieId,
-        String title,
-        Long totalUnits,
+public record RentalTrendResponse(
+        Integer year,
+        Integer month,
+        Long totalRentals,
         BigDecimal totalIncome
 ) {
 }

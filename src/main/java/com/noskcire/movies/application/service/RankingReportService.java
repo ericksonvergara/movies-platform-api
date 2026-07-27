@@ -3,14 +3,12 @@ package com.noskcire.movies.application.service;
 import com.noskcire.movies.application.dto.report.*;
 
 import com.noskcire.movies.domain.enums.*;
-import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.AnalyticsReportRepository;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.RankingReportRepository;
 import com.noskcire.movies.infrastructure.adapter.output.persistence.repository.report.projection.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service

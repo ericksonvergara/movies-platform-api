@@ -3,7 +3,6 @@ package com.noskcire.movies.infrastructure.adapter.input.rest;
 import com.noskcire.movies.application.dto.reservation.CreateReservationRequest;
 import com.noskcire.movies.application.dto.reservation.ReservationResponse;
 import com.noskcire.movies.application.service.ReservationService;
-import com.noskcire.movies.domain.model.Reservation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;

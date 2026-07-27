@@ -2,10 +2,10 @@ package com.noskcire.movies.infrastructure.adapter.output.persistence.repository
 
 import java.math.BigDecimal;
 
-public record ProfitableMovieProjection(
-        Long movieId,
-        String title,
-        Long totalUnits,
+public record RentalTrendProjection(
+        Integer year,
+        Integer month,
+        Long totalRentals,
         BigDecimal totalIncome
 ) {
 }
