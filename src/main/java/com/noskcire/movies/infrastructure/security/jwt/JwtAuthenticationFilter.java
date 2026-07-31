@@ -26,6 +26,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final TokenRepository tokenRepository;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getRequestURI().startsWith("/catalog/");
+    }
+
+    @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -112,4 +117,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 response
         );
     }
+
 }

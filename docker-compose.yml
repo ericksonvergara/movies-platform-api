@@ -1,0 +1,35 @@
+services:
+  app:
+    build: .
+    container_name: movies-app
+    ports:
+      - "8088:8088"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/movies
+      SPRING_DATASOURCE_USERNAME: movies_user
+      SPRING_DATASOURCE_PASSWORD: movies_pass
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    container_name: movies-db
+    environment:
+      POSTGRES_DB: movies
+      POSTGRES_USER: movies_user
+      POSTGRES_PASSWORD: movies_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U movies_user -d movies"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pgdata:

@@ -43,6 +43,7 @@ public class MovieController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Listado de películas obtenido correctamente")
     })
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public List<MovieResponse> getAllMovies(){
 
         return movieService.getAllMovies();
@@ -54,6 +55,7 @@ public class MovieController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Película no encontrada")
     })
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<ApiResponse<MovieResponse>> getMovieById(
             @PathVariable Long id
     ) {
